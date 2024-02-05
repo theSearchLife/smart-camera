@@ -15,6 +15,12 @@ jobs:
             packages: write
             actions: write
         steps:
+            - name: Set environment variables
+              run: |
+                REPO_OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+                REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | awk -F '/' '{print tolower($2)}')
+                echo "REPO_OWNER_LOWER=${REPO_OWNER_LOWER}" >> $GITHUB_ENV
+                echo "REPO_NAME_LOWER=${REPO_NAME_LOWER}" >> $GITHUB_ENV
             - name: Checkout repository
               uses: actions/checkout@v4
             - name: Set up QEMU
@@ -33,4 +39,4 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+                  tags: ghcr.io/$REPO_OWNER_LOWER/$REPO_NAME_LOWER:latest
