@@ -23,14 +23,13 @@ Pillow==9.1.1
 ply==3.11
 psutil==5.8.0
 PyAudio==0.2.11
-pylepton==0.1.2
 PyOpenGL==3.1.6
 PyQt5==5.15.2
 PyQt5-sip==12.8.1
-python-apt==2.2.1
+python-apt
 python-prctl==1.7
 python-telegram-bot==13.12
-pytz==2022.1
+pytz
 pytz-deprecation-shim==0.1.0.post0
 PyYAML==6.0
 requests==2.25.1
@@ -40,7 +39,7 @@ six==1.16.0
 spidev==3.5
 ssh-import-id==5.10
 tornado==6.1
-tzdata==2022.1
+tzdata
 tzlocal==4.2
 urllib3==1.26.5
 v4l2-python3==0.3.1
