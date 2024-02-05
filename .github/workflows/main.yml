@@ -39,4 +39,4 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: ghcr.io/$REPO_OWNER_LOWER/$REPO_NAME_LOWER:latest
+                  tags: ghcr.io/${{ env.REPO_OWNER_LOWER }}/${{ env.REPO_NAME_LOWER }}:latest
