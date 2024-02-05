@@ -18,7 +18,7 @@ jobs:
             - name: Set environment variables
               run: |
                 REPO_OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-                REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | awk -F '/' '{print tolower($2)}')
+                REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
                 echo "REPO_OWNER_LOWER=${REPO_OWNER_LOWER}" >> $GITHUB_ENV
                 echo "REPO_NAME_LOWER=${REPO_NAME_LOWER}" >> $GITHUB_ENV
             - name: Checkout repository
