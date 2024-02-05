@@ -41,4 +41,3 @@ tornado==6.1
 tzdata
 tzlocal==4.2
 urllib3==1.26.5
-v4l2-python3
