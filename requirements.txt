@@ -3,3 +3,4 @@ opencv-python
 edge-impulse-linux
 python-telegram-bot
 PyAudio
+six
