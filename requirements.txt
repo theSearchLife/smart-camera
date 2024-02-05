@@ -13,7 +13,7 @@ Jinja2==3.1.2
 MarkupSafe==2.1.1
 meson==0.62.1
 numpy==1.22.4
-opencv-python==4.5.5.64
+opencv-python==4.5.1.48
 opencv-python-headless==4.5.5.62
 picamera==1.13
 picamera2==0.2.1
