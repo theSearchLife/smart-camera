@@ -8,4 +8,5 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN ["python", "Classify/classify_image.py", "Config.json"]
+RUN chmod +x start.sh
+CMD ["./start.sh"]
