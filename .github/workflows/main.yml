@@ -10,7 +10,6 @@ on:
     types: [opened, synchronize, closed]
     branches:
       - main
-      - master
 
 jobs:
   build_and_push_to_ghcr:
@@ -55,7 +54,7 @@ jobs:
         id: balena_deploy
         with:
           balena_token: ${{ secrets.BALENA_API_KEY }}
-          fleet: gh_omegamax10/arribada-smart-camera
+          fleet: ${{ secrets.BALENA_APP_NAME }}
           default_branch: ${{ github.ref_name }}  # This dynamically sets the branch to the one that triggered the action
       - name: Log release ID built
         run: echo "Built release ID ${{ steps.balena_deploy.outputs.release_id }}"
