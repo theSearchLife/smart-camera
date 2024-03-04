@@ -26,7 +26,7 @@ jobs:
           echo "REPO_OWNER_LOWER=${REPO_OWNER_LOWER}" >> $GITHUB_ENV
           echo "REPO_NAME_LOWER=${REPO_NAME_LOWER}" >> $GITHUB_ENV
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -49,7 +49,7 @@ jobs:
     needs: build_and_push_to_ghcr
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: balena-io/deploy-to-balena-action@master
         id: balena_deploy
         with:
