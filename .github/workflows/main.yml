@@ -55,7 +55,7 @@ jobs:
         id: balena_deploy
         with:
           balena_token: ${{ secrets.BALENA_API_KEY }}
-          fleet: my_org/sample_fleet
+          fleet: gh_omegamax10/arribada-smart-camera
           default_branch: ${{ github.ref_name }}  # This dynamically sets the branch to the one that triggered the action
       - name: Log release ID built
         run: echo "Built release ID ${{ steps.balena_deploy.outputs.release_id }}"
