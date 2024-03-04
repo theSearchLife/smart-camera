@@ -3,9 +3,9 @@ name: Arribada Smart Camera Deployment
 on:
   push:
     branches:
-      - container-deployment
       - main
-      - master
+      - container-deployment
+
   pull_request:
     types: [opened, synchronize, closed]
     branches:
