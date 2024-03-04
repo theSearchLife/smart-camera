@@ -1,54 +1,60 @@
-name: Arribada Smart Camera
-on:
-    push:
-        branches:
-            - container-deployment
-            - main
-    pull_request:
-        branches:
-            - main
-jobs:
-    build:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            packages: write
-            actions: write
-        steps:
-            - name: Set environment variables
-              run: |
-                REPO_OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-                REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
-                echo "REPO_OWNER_LOWER=${REPO_OWNER_LOWER}" >> $GITHUB_ENV
-                echo "REPO_NAME_LOWER=${REPO_NAME_LOWER}" >> $GITHUB_ENV
-            - name: Checkout repository
-              uses: actions/checkout@v4
-            - name: Set up QEMU
-              uses: docker/setup-qemu-action@v3
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v3
-            - name: Login to Docker Hub
-              uses: docker/login-action@v3
-              with:
-                  registry: ghcr.io
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
-            - name: Build and push Docker image
-              uses: docker/build-push-action@v5
-              with:
-                  context: .
-                  file: ./Dockerfile
-                  push: true
-                  tags: ghcr.io/${{ env.REPO_OWNER_LOWER }}/${{ env.REPO_NAME_LOWER }}:latest
-            - name: Trigger Balena Deploy
-              run: |
-                APP_ID=$(curl -X GET "https://api.balena-cloud.com/v6/application?\$filter=app_name%20eq%20'${{ secrets.BALENA_APP_NAME }}'" \
-                -H "Authorization: Bearer ${{ secrets.BALENA_API_KEY }}" \
-                -H "Content-Type: application/json" | jq '.d[0].id')
-                curl -X POST "https://api.balena-cloud.com/v6/application/$APP_ID/restart-service" \
-                -H "Authorization: Bearer ${{ secrets.BALENA_API_KEY }}" \
-                -H "Content-Type: application/json"
-              env:
-                BALENA_API_KEY: ${{ secrets.BALENA_API_KEY }}
-                BALENA_APP_NAME: ${{ secrets.BALENA_APP_NAME }}
+name: Arribada Smart Camera Deployment
 
+on:
+  push:
+    branches:
+      - container-deployment
+      - main
+      - master
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches:
+      - main
+      - master
+
+jobs:
+  build_and_push_to_ghcr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      actions: write
+    steps:
+      - name: Set environment variables
+        run: |
+          REPO_OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          echo "REPO_OWNER_LOWER=${REPO_OWNER_LOWER}" >> $GITHUB_ENV
+          echo "REPO_NAME_LOWER=${REPO_NAME_LOWER}" >> $GITHUB_ENV
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/${{ env.REPO_OWNER_LOWER }}/${{ env.REPO_NAME_LOWER }}:latest
+
+  balena_cloud_build:
+    needs: build_and_push_to_ghcr
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: balena-io/deploy-to-balena-action@master
+        id: balena_deploy
+        with:
+          balena_token: ${{ secrets.BALENA_API_KEY }}
+          fleet: gh_omegamax10/arribada-smart-camera
+      - name: Log release ID built
+        run: echo "Built release ID ${{ steps.balena_deploy.outputs.release_id }}"
