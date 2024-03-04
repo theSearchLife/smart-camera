@@ -42,7 +42,13 @@ jobs:
                   tags: ghcr.io/${{ env.REPO_OWNER_LOWER }}/${{ env.REPO_NAME_LOWER }}:latest
             - name: Trigger Balena Deploy
               run: |
-                curl -X POST "https://api.balena-cloud.com/v6/application(\$(curl -X GET "https://api.balena-cloud.com/v6/application?\$filter=app_name%20eq%20'${{ secrets.BALENA_APP_NAME }}'" -H "Authorization: Bearer ${{ secrets.BALENA_API_KEY }}" -H "Content-Type: application/json" | jq '.d[0].id'))/restart-service" -H "Authorization: Bearer ${{ secrets.BALENA_API_KEY }}" -H "Content-Type: application/json"
+                APP_ID=$(curl -X GET "https://api.balena-cloud.com/v6/application?\$filter=app_name%20eq%20'${{ secrets.BALENA_APP_NAME }}'" \
+                -H "Authorization: Bearer ${{ secrets.BALENA_API_KEY }}" \
+                -H "Content-Type: application/json" | jq '.d[0].id')
+                curl -X POST "https://api.balena-cloud.com/v6/application/$APP_ID/restart-service" \
+                -H "Authorization: Bearer ${{ secrets.BALENA_API_KEY }}" \
+                -H "Content-Type: application/json"
               env:
                 BALENA_API_KEY: ${{ secrets.BALENA_API_KEY }}
                 BALENA_APP_NAME: ${{ secrets.BALENA_APP_NAME }}
+
