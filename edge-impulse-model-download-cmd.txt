@@ -1,0 +1,1 @@
+edge-impulse-linux-runner --download ./Data/model/model.eim --api-key ei_11259956518a5bc8a07ff91a35e5e0c1dad8ac41f651a4e1

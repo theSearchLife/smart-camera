@@ -4,7 +4,7 @@
 			"FPS": 0
 		},
 		"STREAM": {
-			"URL": "http://webkamera.overtornea.se/view/view.shtml?imagePath=/mjpg/video.mjpg&size=2",
+			"URL": "http://142.154.137.29/mjpg/video.mjpg",
 			"FPS": 1
 		}
 	},
@@ -17,7 +17,7 @@
 		]
 	},
 	"DETECTION": {
-		"NETWORK": "Data/model/",
+		"NETWORK": "Data/model/model.eim",
 		"UPLOADEDGE": 1
 	},
 	"ALERT": {
