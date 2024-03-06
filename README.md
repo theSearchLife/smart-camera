@@ -32,13 +32,13 @@ How to run
 ==========
 
 ```python
-python Capture/picamera.py Config.json
+python3 Capture/picamera.py Config.json
 
-python Motion/motion.py Config.json
+python3 Motion/motion.py Config.json
 
-python Classify/classify_image.py Config.json
+python3 Classify/classify_image.py Config.json
 
-python Upload/upload_edge.py Config.json
+python3 Upload/upload_edge.py Config.json
 
-python Upload/upload_telegram.py Config.json
+python3 Upload/upload_telegram.py Config.json
 ```

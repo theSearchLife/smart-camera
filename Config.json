@@ -1,10 +1,10 @@
 {
 	"CAPTURE": {
 		"PICAMERA": {
-			"FPS": 1
+			"FPS": 0
 		},
 		"STREAM": {
-			"URL": "",
+			"URL": "http://webkamera.overtornea.se/view/view.shtml?imagePath=/mjpg/video.mjpg&size=2",
 			"FPS": 1
 		}
 	},
@@ -17,13 +17,13 @@
 		]
 	},
 	"DETECTION": {
-		"NETWORK": "/home/",
+		"NETWORK": "Data/model/",
 		"UPLOADEDGE": 1
 	},
 	"ALERT": {
-		"CHANNELID": "111",
-		"TOKEN": "xxx"
+		"CHANNELID": "-1002095168651",
+		"TOKEN": "7127117018:AAH120uav4LWxJgnSCCmedoS3bXR4yiJ37w"
 	},
 	"DEBUG": 1,
-	"DATAFOLDER": "/home"
+	"DATAFOLDER": "./Data"
 }

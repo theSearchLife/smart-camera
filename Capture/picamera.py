@@ -1,4 +1,4 @@
-from picamera2 import Picamera2, Preview
+# from picamera2 import Picamera2, Preview
 from random import randint
 
 import time
