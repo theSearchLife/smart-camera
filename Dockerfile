@@ -5,17 +5,26 @@ RUN apt update && \
     apt install -y curl libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
     apt clean
 
-# Install Node.js and npm
-RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash && \
-    mkdir ~/.npm-global && \
-    npm config set prefix '~/.npm-global' && \
-    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.profile && \
-    source ~/.profile && \
-    nvm install node && \
-    npm install -g edge-impulse-cli
+# Install NVM (Node Version Manager)
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 
-# Install Edge Impulse CLI
-RUN npm install edge-impulse-linux -g --unsafe-perm
+# Install Node.js using NVM
+RUN nvm install node
+
+# Create a directory for global npm packages
+RUN mkdir ~/.npm-global
+
+# Set the prefix for npm to the newly created directory
+RUN npm config set prefix '~/.npm-global'
+
+# Update the PATH environment variable to include the directory for global npm packages
+RUN echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.profile
+
+# Source the updated profile to use the updated PATH in the current session
+RUN source ~/.profile
+
+# Install the edge-impulse-cli using npm
+RUN npm install -g edge-impulse-cli
 
 # Set the working directory
 WORKDIR /smart-camera
