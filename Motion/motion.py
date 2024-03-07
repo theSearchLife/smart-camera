@@ -76,7 +76,7 @@ def main(argv):
             # Iterate over sorted list of files and print file path
             # along with last modification time of file
     
-            file_path = os.path.join(dir_name, list_of_files[0])
+            file_path = list_of_files[0]
             frame1 = get_image(dir_name,file_path)
             RoisClass=Rois()
             RoisClass.choose_ROIs(frame1)

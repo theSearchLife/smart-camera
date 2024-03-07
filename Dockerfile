@@ -2,12 +2,17 @@ FROM python:3.9-slim
 
 # Install necessary system dependencies
 RUN apt update && \
-    apt install -y libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
+    apt install -y curl libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
     apt clean
 
 # Install Node.js and npm
-RUN apt update && \
-    apt install -y nodejs npm
+RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash && \
+    mkdir ~/.npm-global && \
+    npm config set prefix '~/.npm-global' && \
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.profile && \
+    source ~/.profile && \
+    nvm install node && \
+    npm install -g edge-impulse-cli
 
 # Install Edge Impulse CLI
 RUN npm install edge-impulse-linux -g --unsafe-perm

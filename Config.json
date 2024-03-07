@@ -10,13 +10,14 @@
 	},
 	"MOTION": {
 		"ROI": [
-			10,
-			10,
-			100,
-			100
+			800,
+			500,
+			1200,
+			720
 		]
 	},
 	"DETECTION": {
+		"APIKEY": "ei_11259956518a5bc8a07ff91a35e5e0c1dad8ac41f651a4e1",
 		"NETWORK": "Data/model/model.eim",
 		"UPLOADEDGE": 1
 	},
