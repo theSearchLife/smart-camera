@@ -5,11 +5,12 @@ RUN apt update && \
     apt install -y curl libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
     apt clean
 
-# Install NVM (Node Version Manager)
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-
-# Install Node.js using NVM
-RUN nvm install node
+# Install NVM and install Node.js using NVM in a single RUN command
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash \
+    && export NVM_DIR="$HOME/.nvm" \
+    && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" \
+    && [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" \
+    && nvm install node
 
 # Create a directory for global npm packages
 RUN mkdir ~/.npm-global
