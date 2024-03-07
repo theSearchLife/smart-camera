@@ -32,6 +32,8 @@ How to run
 ==========
 
 ```python
+python3 Classify/download_model.py Config.json
+
 python3 Capture/picamera.py Config.json
 
 python3 Motion/motion.py Config.json

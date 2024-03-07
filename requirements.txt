@@ -4,3 +4,4 @@ edge-impulse-linux
 python-telegram-bot
 PyAudio
 six
+aiogram

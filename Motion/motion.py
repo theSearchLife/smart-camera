@@ -52,6 +52,7 @@ def get_image(dir_name,file_name):
             return image
         except Exception as ex:
             print(ex)
+            print("Error reading image. Retrying...")
         attempts += 1
         time.sleep(0.2)
     return None
@@ -68,13 +69,10 @@ def main(argv):
         try:
             dir_name = config_loader.get_value("DATAFOLDER")+'/captured/'
             # Get list of all files only in the given directory
-            list_of_files = filter( lambda x: os.path.isfile(os.path.join(dir_name, x)),
-                                    os.listdir(dir_name) )
+            list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)), os.listdir(dir_name) )
             # Sort list of files based on last modification time in ascending order
-            list_of_files = sorted( list_of_files,
-                                    key = lambda x: os.path.getmtime(os.path.join(dir_name, x)))
-            # Iterate over sorted list of files and print file path
-            # along with last modification time of file
+            list_of_files = sorted(list_of_files, key = lambda x: os.path.getmtime(os.path.join(dir_name, x)))
+            # Iterate over sorted list of files and print file path along with last modification time of file
     
             file_path = list_of_files[0]
             frame1 = get_image(dir_name,file_path)
@@ -86,13 +84,10 @@ def main(argv):
     
             while True:
                 time.sleep(1)
-                list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)),
-                                       os.listdir(dir_name))
+                list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)), os.listdir(dir_name))
                 # Sort list of files based on last modification time in ascending order
-                list_of_files = sorted(list_of_files,
-                                       key=lambda x: os.path.getmtime(os.path.join(dir_name, x)))
-                # Iterate over sorted list of files and print file path
-                # along with last modification time of file
+                list_of_files = sorted(list_of_files, key=lambda x: os.path.getmtime(os.path.join(dir_name, x)))
+                # Iterate over sorted list of files and print file path along with last modification time of file
     
                 for file_name in list_of_files:
                 
@@ -124,7 +119,7 @@ def main(argv):
                                     cv2.rectangle(frame1,(x,y),(x+w,y+h), (0,255,245), 2)
     
                         #draw
-                        frame3=frame1
+                        frame3=frame1.copy()
 
                         if config_loader.get_value("DEBUG") == 1:
                             cv2.drawContours(frame3,contours,-1,(0,255,0), 2)
@@ -135,11 +130,12 @@ def main(argv):
                         frame2 = get_image(dir_name,file_name)
     
                         #remove old photo
-                        if file_name_to_del!='':
+                        if file_name_to_del != '' and os.path.exists(file_name_to_del):
                             try:
                                 os.remove(file_name_to_del)
                             except Exception as ex:
                                 print(ex)
+                                print("Error deleting file")
                         file_name_to_del=os.path.join(dir_name, file_name)
         except Exception as ex:
             pass           

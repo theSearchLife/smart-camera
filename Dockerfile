@@ -2,7 +2,7 @@ FROM python:3.9-slim
 
 # Install necessary system dependencies
 RUN apt update && \
-    apt install -y curl libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
+    apt install -y libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
     apt clean
 
 # Install Node.js (latest version)
