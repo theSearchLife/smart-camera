@@ -5,6 +5,12 @@ RUN apt update && \
     apt install -y python3 python3-pip python3-venv libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
     apt clean
 
+# Set up a custom npm global installation directory
+RUN mkdir ~/.npm-global && \
+    npm config set prefix '~/.npm-global' && \
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.profile && \
+    . ~/.profile
+
 # Install the edge-impulse-cli using npm
 RUN npm install -g edge-impulse-cli
 
