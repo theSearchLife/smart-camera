@@ -59,6 +59,7 @@ def get_image(dir_name,file_name):
 
 
 def main(argv):
+    time.sleep(20)
     config_loader.load_config(argv[0])
 
     while True:
