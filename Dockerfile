@@ -2,13 +2,18 @@ FROM node:latest
 
 # Install necessary system dependencies
 RUN apt update && \
-    apt install -y python3 python3-pip libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
+    apt install -y python3 python3-pip python3-venv libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
     apt clean
 
 # Install the edge-impulse-cli using npm
 RUN npm install -g edge-impulse-cli
+
 # Set the working directory
 WORKDIR /smart-camera
+
+# Create a Python virtual environment named smart-camera-venv and activate it
+RUN python3 -m venv /smart-camera/smart-camera-venv
+ENV PATH="/smart-camera/smart-camera-venv/bin:$PATH"
 
 # Install Python dependencies
 COPY requirements.txt .
@@ -28,5 +33,6 @@ COPY . .
 # Make start.sh executable
 RUN chmod +x start.sh
 
-# Command to run your application
-CMD ["./start.sh"]
+# Ensure commands and scripts are run within the virtual environment
+# by activating it
+CMD ["/bin/bash", "-c", "source /smart-camera/smart-camera-venv/bin/activate && ./start.sh"]
