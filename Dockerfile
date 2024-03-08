@@ -1,20 +1,9 @@
-FROM python:3.9-slim
+FROM node:latest
 
 # Install necessary system dependencies
 RUN apt update && \
     apt install -y libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
     apt clean
-
-# Install Node.js (latest version)
-RUN curl -sL https://deb.nodesource.com/setup_current.x | bash - \
-    && apt-get install -y nodejs
-
-# Create a directory for global npm packages and set the prefix
-RUN mkdir -p /root/.npm-global \
-    && npm config set prefix '/root/.npm-global'
-
-# Update PATH environment variable to include the directory for global npm packages
-ENV PATH="/root/.npm-global/bin:${PATH}"
 
 # Install the edge-impulse-cli using npm
 RUN npm install -g edge-impulse-cli
