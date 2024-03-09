@@ -6,7 +6,9 @@
 		"STREAM": {
 			"URL": "http://142.154.137.29/mjpg/video.mjpg",
 			"FPS": 1
-		}
+		},
+		"STARTTIME": "16:00",
+		"ENDTIME": "08:00"
 	},
 	"MOTION": {
 		"ROI": [
