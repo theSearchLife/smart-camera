@@ -1,4 +1,4 @@
-name: Arribada Smart Camera Deployment
+name: Smart Camera Deployment
 
 on:
   push:
@@ -44,17 +44,3 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ghcr.io/${{ env.REPO_OWNER_LOWER }}/${{ env.REPO_NAME_LOWER }}:latest
-
-  balena_cloud_build:
-    needs: build_and_push_to_ghcr
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: balena-io/deploy-to-balena-action@master
-        id: balena_deploy
-        with:
-          balena_token: ${{ secrets.BALENA_API_KEY }}
-          fleet: ${{ secrets.BALENA_APP_NAME }}
-          default_branch: ${{ github.ref_name }}  # This dynamically sets the branch to the one that triggered the action
-      - name: Log release ID built
-        run: echo "Built release ID ${{ steps.balena_deploy.outputs.release_id }}"

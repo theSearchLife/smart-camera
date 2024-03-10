@@ -44,3 +44,6 @@ python3 Upload/upload_edge.py Config.json
 
 python3 Upload/upload_telegram.py Config.json
 ```
+
+How to deploy on Balena Fleet
+==========

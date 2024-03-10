@@ -1,0 +1,11 @@
+version: '2.4'
+
+services:
+  smart-camera:
+    image: ghcr.io/thesearchlife/smart-camera:latest
+    container_name: smart-camera
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ~/smart-camera-data:/smart-camera/Data
+    
