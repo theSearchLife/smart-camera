@@ -47,3 +47,11 @@ python3 Upload/upload_telegram.py Config.json
 
 How to deploy on Balena Fleet
 ==========
+In order to deploy the app on a Balena.io Fleet, the balena-cli tool must be installed. This tool is available for installing on [Linux](https://github.com/balena-io/balena-cli/blob/master/INSTALL-LINUX.md), [Windows](https://github.com/balena-io/balena-cli/blob/master/INSTALL-WINDOWS.md), and [macOS](https://github.com/balena-io/balena-cli/blob/master/INSTALL-MAC.md). After this tool is installed, run the following commands from the current directory of this repository:
+
+```bash
+balena login  # used only once in order to login into the Balena Cloud account
+balena push <balena-cloud-fleet-name>  # push the service on your desired fleet, e.g: gh_omegamax10/thesearchlife-smart-camera
+```
+
+The collected data of this fleet is placed on the host device of the fleet in the following location: `/var/lib/docker/volumes/<APP ID>_smart-camera-data/_data`. This location stores the data from the `Data/` folder of the container.

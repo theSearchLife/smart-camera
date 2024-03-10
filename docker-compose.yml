@@ -9,10 +9,6 @@ services:
     volumes:
       - smart-camera-data:/smart-camera/Data
 
-volumes:
+volumes: 
   smart-camera-data:
     driver: local
-    driver_opts:
-      type: none
-      device: /root/smart-camera-data
-      o: bind
