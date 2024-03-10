@@ -7,9 +7,15 @@ import sys, getopt
 import signal
 import config_loader
 import cv2
-
+from telegram import Bot
+from telegram.ext import CommandHandler, Updater
+import asyncio
 #used for closing
 picam2=None
+
+async def send_telegram_message(channel_id, token, message):
+    bot = Bot(token=token)
+    await bot.send_message(chat_id=channel_id, text=message)
 
 def is_time_to_capture(start_time_str, end_time_str):
     """
@@ -53,6 +59,8 @@ def main(argv):
         except getopt.GetoptError:
             sys.exit(2)
         config_loader.load_config(args[0])
+        TOKEN = config_loader.get_value("ALERT_TOKEN")
+        channel_id = config_loader.get_value("ALERT_CHANNELID")
         start_time_str = config_loader.get_value("CAPTURE_STARTTIME")
         end_time_str = config_loader.get_value("CAPTURE_ENDTIME")
         if not is_time_to_capture(start_time_str, end_time_str):
@@ -66,7 +74,8 @@ def main(argv):
                     start_time=time.time()
                     ret, frame = vcap.read()
                     if ret == False:
-                        print("Frame is empty")
+                        print("Frame is empty, stream is not available!")
+                        raise Exception("Frame is empty, stream is not available!")
                         break
                     else:
                         now = datetime.datetime.now()
@@ -75,8 +84,10 @@ def main(argv):
 
                 vcap.release()
             except Exception as ex:
-                print(ex)
-
+                print(f'Camera stream {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes')
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(send_telegram_message(channel_id, TOKEN, f'Camera stream {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes'))
+                time.sleep(300)
         else:
             try:
                 fps_needed = float(config_loader.get_value("CAPTURE_PICAMERA_FPS"))
@@ -104,7 +115,10 @@ def main(argv):
 
                     keep_fps(start_time,time.time(),fps_needed)
             except Exception as ex:
-                print(ex)
+                print(f'Picamera is not available or failed: {ex}, retrying in 5 minutes')
+                loop = asyncio.get_event_loop()
+                loop.run_until_complete(send_telegram_message(channel_id, TOKEN, f'Picamera is not available or failed: {ex}, retrying in 5 minutes'))
+                time.sleep(300)
         time.sleep(5)
 
 
