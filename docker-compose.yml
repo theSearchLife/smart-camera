@@ -7,5 +7,12 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ~/smart-camera-data:/smart-camera/Data
-    
+      - smart-camera-data:/smart-camera/Data
+
+volumes:
+  smart-camera-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/smart-camera-data
+      o: bind
