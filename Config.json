@@ -7,8 +7,36 @@
 			"URL": "",
 			"FPS": 1
 		},
-		"STARTTIME": "",
-		"ENDTIME": ""
+		"SCHEDULE": {
+			"MONDAY": {
+				"START": "",
+				"END": ""
+			},
+			"TUESDAY": {
+				"START": "",
+				"END": ""
+			},
+			"WEDNESDAY": {
+				"START": "",
+				"END": ""
+			},
+			"THURSDAY": {
+				"START": "",
+				"END": ""
+			},
+			"FRIDAY": {
+				"START": "",
+				"END": ""
+			},
+			"SATURDAY": {
+				"START": "",
+				"END": ""
+			},
+			"SUNDAY": {
+				"START": "",
+				"END": ""
+			}
+		}
 	},
 	"MOTION": {
 		"ROI": [
