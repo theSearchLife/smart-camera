@@ -9,7 +9,7 @@ services:
     volumes:
       - smart-camera-data:/smart-camera/Data
     labels:
-      - io.balena.features.supervisor-api: '1'
+      io.balena.features.supervisor-api: '1'
 
 volumes: 
   smart-camera-data:
