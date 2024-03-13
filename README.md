@@ -51,7 +51,16 @@ In order to deploy the app on a Balena.io Fleet, the balena-cli tool must be ins
 
 ```bash
 balena login  # used only once in order to login into the Balena Cloud account
-balena push <balena-cloud-fleet-name>  # push the service on your desired fleet, e.g: gh_omegamax10/thesearchlife-smart-camera
+balena push <balena-cloud-fleet-name>  # push the service on your desired fleet, e.g.: gh_omegamax10/thesearchlife-smart-camera
 ```
 
 The collected data of this fleet is placed on the host device of the fleet in the following location: `/var/lib/docker/volumes/<APP ID>_smart-camera-data/_data`. This location stores the data from the `Data/` folder of the container.
+
+
+How to view logs of the Smart-Camera service on devices of a Balena fleet
+==========
+In order to see the logs of the Smart-Camera service on a device of a fleet, we must activate persistent logging in the fleet configuration on Balena Cloud. The logs the can be viewed with the following command:
+
+```bash
+journalctl -a --no-pager -u balena.service --file /var/log/journal/<machine-id>/system.journal  # Replace <machine-id> with the unique system identifier to view balena.service logs from the specified journal file, e.g.:cdc38b4575d543bab0fc166e5f1fba07; the machine-id can be found in /etc/machine-id
+```
