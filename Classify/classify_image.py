@@ -73,7 +73,7 @@ def main(argv):
 
                             #cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
                             #cv2.imwrite("detected.jpg",cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
-                            if bb['value']>0.85:
+                            if bb['value'] > float(config_loader.get_value("DETECTION_THRESHOLD")):
                                 cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
                                 if config_loader.get_value("DEBUG") == 1:
                                     cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/debug/detect.jpg',cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))

@@ -49,6 +49,7 @@
 	"DETECTION": {
 		"APIKEY": "",
 		"NETWORK": "Data/model/model.eim",
+		"THRESHOLD": 0.75,
 		"UPLOADEDGE": 1
 	},
 	"ALERT": {
