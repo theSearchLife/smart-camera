@@ -40,14 +40,14 @@
 	},
 	"MOTION": {
 		"ROI": {
-			"XMIN": 200,
-			"YMIN": 100,
-			"XMAX": 750,
-			"YMAX": 350
+			"XMIN": 0,
+			"YMIN": 0,
+			"XMAX": 0,
+			"YMAX": 0
 		}
 	},
 	"DETECTION": {
-		"APIKEY": "ei_11259956518a5bc8a07ff91a35e5e0c1dad8ac41f651a4e1",
+		"APIKEY": "",
 		"NETWORK": "Data/model/model.eim",
 		"UPLOADEDGE": 1
 	},
