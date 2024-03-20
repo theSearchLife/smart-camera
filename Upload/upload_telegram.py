@@ -7,13 +7,13 @@ import config_loader
 
 async def send_photo_async(bot, channel_id, photo_path):
     try:
-        await bot.send_photo(chat_id=channel_id, photo=FSInputFile(photo_path))
+        await bot.send_photo(chat_id=channel_id, photo=FSInputFile(photo_path), caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")}')
     except Exception as ex:
         print(f"An error occurred: {ex}")
         # Sleep to avoid flooding the API with requests when an error occurs
         await asyncio.sleep(ex.retry_after if hasattr(ex, "retry_after") else 25)
         # Retry sending the photo
-        await bot.send_photo(chat_id=channel_id, photo=FSInputFile(photo_path))
+        await bot.send_photo(chat_id=channel_id, photo=FSInputFile(photo_path), caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")}')
 
 async def process_files(bot, channel_id, dir_name):
     list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)), os.listdir(dir_name))
