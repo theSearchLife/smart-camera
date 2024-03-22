@@ -75,6 +75,9 @@ def main(argv):
                             #cv2.imwrite("detected.jpg",cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
                             if bb['value'] > float(config_loader.get_value("DETECTION_THRESHOLD")):
                                 cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
+                                (text_width, text_height), baseline = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                                cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
+                                cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
                                 if config_loader.get_value("DEBUG") == 1:
                                     cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/debug/detect.jpg',cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
                                 now = datetime.datetime.now()
