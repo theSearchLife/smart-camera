@@ -5,7 +5,6 @@ import os
 import sys, getopt
 import datetime
 import time
-
 from random import randint
 from edge_impulse_linux.image import ImageImpulseRunner
 
@@ -18,7 +17,9 @@ def main(argv):
     config_loader.load_config(argv[0])
 
     modelfile = config_loader.get_value("DETECTION_NETWORK")
-
+    detection_time_interval = config_loader.get_value("DETECTION_INTERVAL")
+    last_detection_time = datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0, 0, 0)
+    current_detection_time = datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0, 0, 0)
     print('MODEL: ' + modelfile)
 
     with ImageImpulseRunner(modelfile) as runner:
@@ -54,7 +55,9 @@ def main(argv):
                     #cv2.imwrite('debug.jpg', cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
 
                     res = runner.classify(features)
-
+                    now = datetime.datetime.now()
+                    if config_loader.get_value("DETECTION_UPLOADEDGE") == 1:
+                        cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detected/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
                     if "classification" in res["result"].keys():
                         if config_loader.get_value("DEBUG") == 1:
                             print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
@@ -74,21 +77,17 @@ def main(argv):
                             #cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
                             #cv2.imwrite("detected.jpg",cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
                             if bb['value'] > float(config_loader.get_value("DETECTION_THRESHOLD")):
-                                cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
-                                (text_width, text_height), baseline = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-                                cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
-                                cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-                                if config_loader.get_value("DEBUG") == 1:
-                                    cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/debug/detect.jpg',cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
-                                now = datetime.datetime.now()
-                                cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detectedTelegram/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
-                                
-                    now = datetime.datetime.now()
-
-                    if config_loader.get_value("DETECTION_UPLOADEDGE") == 1:
-                        cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detected/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
+                                current_detection_time = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+                                if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
+                                    last_detection_time = current_detection_time
+                                    cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
+                                    (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                                    cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
+                                    cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                                    now = datetime.datetime.now()
+                                    cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detectedTelegram/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
                     #cv2.imwrite("detected.jpg",cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR)) 
-                    os.remove(file_path)      
+                    os.remove(file_path)
                 time.sleep(5) 
 
         finally:
