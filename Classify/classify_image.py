@@ -17,7 +17,7 @@ def main(argv):
     config_loader.load_config(argv[0])
 
     modelfile = config_loader.get_value("DETECTION_NETWORK")
-    detection_time_interval = config_loader.get_value("DETECTION_INTERVAL")
+    detection_time_interval = float(config_loader.get_value("DETECTION_INTERVAL"))
     last_detection_time = datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0, 0, 0)
     current_detection_time = datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0, 0, 0)
     print('MODEL: ' + modelfile)
