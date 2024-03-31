@@ -110,7 +110,7 @@ def main(argv):
                         break
                 vcap.release()
             except Exception as ex:
-                print(f'Camera stream {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes')
+                print(f'Camera stream from camera {config_loader.get_value("CAPTURE_NAME")} available on url {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes')
                 loop = asyncio.get_event_loop()
                 loop.run_until_complete(send_telegram_message(channel_id, TOKEN, f'Camera stream {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes'))
                 time.sleep(300)

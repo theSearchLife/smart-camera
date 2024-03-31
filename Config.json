@@ -51,7 +51,7 @@
 		"APIKEY": "",
 		"NETWORK": "Data/model/model.eim",
 		"THRESHOLD": 0.75,
-		"INTERVAL": 600,
+		"INTERVAL": 60,
 		"UPLOADEDGE": 1
 	},
 	"ALERT": {
