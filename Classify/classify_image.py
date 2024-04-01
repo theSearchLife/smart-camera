@@ -83,14 +83,14 @@ def main(argv):
                                 if config_loader.get_value("DEBUG") == 1:
                                     print(f"Detection on center crop for {file_path}")
                                 current_detection_time = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-                                if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
-                                    last_detection_time = current_detection_time
-                                    cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
-                                    (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-                                    cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
-                                    cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-                                    now = datetime.datetime.now()
-                                    cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detectedTelegram/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
+                                cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
+                                (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                                cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
+                                cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                            if detection_for_center_crop == True and (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
+                                last_detection_time = current_detection_time
+                                now = datetime.datetime.now()
+                                cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detectedTelegram/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
                                 
                     if detection_for_center_crop == False:
                         # get_features_from_image also takes a crop direction arguments in case you don't have square images
@@ -128,14 +128,14 @@ def main(argv):
                                     if config_loader.get_value("DEBUG") == 1:
                                         print(f"Detection on right crop for {file_path}")
                                     current_detection_time = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-                                    if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
-                                        last_detection_time = current_detection_time
-                                        cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
-                                        (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-                                        cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
-                                        cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-                                        now = datetime.datetime.now()
-                                        cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detectedTelegram/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
+                                    cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
+                                    (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                                    cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
+                                    cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                                if detection_for_right_crop == True and (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
+                                    last_detection_time = current_detection_time
+                                    now = datetime.datetime.now()
+                                    cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detectedTelegram/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
 
                     if detection_for_right_crop == False and detection_for_center_crop == False:
                         # get_features_from_image also takes a crop direction arguments in case you don't have square images
@@ -173,12 +173,12 @@ def main(argv):
                                     if config_loader.get_value("DEBUG") == 1:
                                         print(f"Detection on left crop for {file_path}")
                                     current_detection_time = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-                                    if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
+                                    cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
+                                    (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                                    cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
+                                    cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                                    if detection_for_left_crop == True and (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
                                         last_detection_time = current_detection_time
-                                        cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
-                                        (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-                                        cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
-                                        cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
                                         now = datetime.datetime.now()
                                         cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detectedTelegram/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
                     #cv2.imwrite("detected.jpg",cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR))
