@@ -71,6 +71,7 @@ def main(argv):
 
                     elif "bounding_boxes" in res["result"].keys():
                         if config_loader.get_value("DEBUG") == 1:
+                            print("Detection on center crop for " + file_path)
                             print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
                         for bb in res["result"]["bounding_boxes"]:
                             if config_loader.get_value("DEBUG") == 1:
@@ -116,6 +117,7 @@ def main(argv):
 
                         elif "bounding_boxes" in res["result"].keys():
                             if config_loader.get_value("DEBUG") == 1:
+                                print("Detection on right crop for " + file_path)
                                 print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
                             for bb in res["result"]["bounding_boxes"]:
                                 if config_loader.get_value("DEBUG") == 1:
@@ -161,6 +163,7 @@ def main(argv):
 
                         elif "bounding_boxes" in res["result"].keys():
                             if config_loader.get_value("DEBUG") == 1:
+                                print("Detection on left crop for " + file_path)
                                 print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
                             for bb in res["result"]["bounding_boxes"]:
                                 if config_loader.get_value("DEBUG") == 1:

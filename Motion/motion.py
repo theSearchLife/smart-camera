@@ -35,8 +35,8 @@ class Rois():
             y2=roi[1]
             y1=roi[3]
 
-            if config_loader.get_value("DEBUG") == 1:
-                cv2.rectangle(frame1, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            # if config_loader.get_value("DEBUG") == 1:
+            #     cv2.rectangle(frame1, (x1, y1), (x2, y2), (0, 255, 0), 2)
             if (x1 < newx2 and x2 > newx1 and
                     y1 > newy2 and y2 < newy1):
                 return True
@@ -116,8 +116,8 @@ def main(argv):
                                 now = datetime.datetime.now()
                                 cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/motion/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(frame1, 0))
 
-                                if config_loader.get_value("DEBUG") ==1:
-                                    cv2.rectangle(frame1,(x,y),(x+w,y+h), (0,255,245), 2)
+                                # if config_loader.get_value("DEBUG") ==1:
+                                #     cv2.rectangle(frame1,(x,y),(x+w,y+h), (0,255,245), 2)
     
                         #draw
                         frame3=frame1.copy()
