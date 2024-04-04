@@ -103,7 +103,7 @@ def main(argv):
                         raise Exception("Frame is empty, stream is not available!")
                     else:
                         now = datetime.datetime.now()
-                        cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'captured', f'{now.strftime('%Y%m%d%H%M%S%f')}.jpg'), frame)
+                        cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'captured', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'), frame)
                     keep_fps(start_time,time.time(),fps_needed)
                     if not is_capture_time:
                         vcap.release()
@@ -133,7 +133,7 @@ def main(argv):
                     start_time = time.time()
                     now = datetime.datetime.now()
 
-                    metadata = picam2.capture_file(os.path.join(config_loader.get_value("DATAFOLDER"), 'captured', f'{now.strftime('%Y%m%d%H%M%S%f')}.jpg'))
+                    metadata = picam2.capture_file(os.path.join(config_loader.get_value("DATAFOLDER"), 'captured', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'))
                     if config_loader.get_value("DEBUG") == 1:
                         metadata = picam2.capture_file(config_loader.get_value("DATAFOLDER")+'/debug/capture.jpg')
                     if config_loader.get_value("DEBUG") == 1:
