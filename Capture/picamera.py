@@ -45,7 +45,7 @@ def is_time_to_capture():
     if start_time >= end_time:
         raise ValueError("Start time cannot be later than end time for the day.")
     # Check if the current time is within the start and end time range
-    return start_time <= current_time <= end_time
+    return not (start_time <= current_time <= end_time)
 
 def update_capture_status(update_interval=30):
     """
@@ -94,7 +94,7 @@ def main(argv):
         if config_loader.get_value("CAPTURE_PICAMERA_FPS") == 0:
             try:
                 fps_needed = float(config_loader.get_value("CAPTURE_STREAM_FPS"))
-                vcap = cv2.VideoCapture(config_loader.get_value("CAPTURE_STREAM_URL"), cv2.CAP_FFMPEG)
+                vcap = cv2.VideoCapture(config_loader.get_value("CAPTURE_STREAM_URL"))
                 while True:
                     start_time=time.time()
                     ret, frame = vcap.read()
