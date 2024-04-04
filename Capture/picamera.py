@@ -1,6 +1,6 @@
 # from picamera2 import Picamera2, Preview
 from random import randint
-
+import os
 import time
 import datetime
 import sys, getopt
@@ -94,7 +94,7 @@ def main(argv):
         if config_loader.get_value("CAPTURE_PICAMERA_FPS") == 0:
             try:
                 fps_needed = float(config_loader.get_value("CAPTURE_STREAM_FPS"))
-                vcap = cv2.VideoCapture(config_loader.get_value("CAPTURE_STREAM_URL"))
+                vcap = cv2.VideoCapture(config_loader.get_value("CAPTURE_STREAM_URL"), cv2.CAP_FFMPEG)
                 while True:
                     start_time=time.time()
                     ret, frame = vcap.read()
@@ -103,7 +103,7 @@ def main(argv):
                         raise Exception("Frame is empty, stream is not available!")
                     else:
                         now = datetime.datetime.now()
-                        cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/captured/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg', frame)
+                        cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'captured', f'{now.strftime('%Y%m%d%H%M%S%f')}.jpg'), frame)
                     keep_fps(start_time,time.time(),fps_needed)
                     if not is_capture_time:
                         vcap.release()
@@ -133,7 +133,7 @@ def main(argv):
                     start_time = time.time()
                     now = datetime.datetime.now()
 
-                    metadata = picam2.capture_file(config_loader.get_value("DATAFOLDER")+'/captured/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg')
+                    metadata = picam2.capture_file(os.path.join(config_loader.get_value("DATAFOLDER"), 'captured', f'{now.strftime('%Y%m%d%H%M%S%f')}.jpg'))
                     if config_loader.get_value("DEBUG") == 1:
                         metadata = picam2.capture_file(config_loader.get_value("DATAFOLDER")+'/debug/capture.jpg')
                     if config_loader.get_value("DEBUG") == 1:

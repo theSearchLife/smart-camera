@@ -64,7 +64,7 @@ def main(argv):
                     res = runner.classify(features)
                     now = datetime.datetime.now()
                     if config_loader.get_value("DETECTION_UPLOADEDGE") == 1:
-                        cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detected/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  restore_image(cropped, aspect_ratio))
+                        cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'detected', f'{now.strftime('%Y%m%d%H%M%S%f')}.jpg'),  restore_image(cropped, aspect_ratio))
                     if "classification" in res["result"].keys():
                         if config_loader.get_value("DEBUG") == 1:
                             print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
@@ -92,7 +92,7 @@ def main(argv):
                             if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
                                 last_detection_time = current_detection_time
                                 now = datetime.datetime.now()
-                                cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/detectedTelegram/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  restore_image(cropped, aspect_ratio))      
+                                cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{now.strftime('%Y%m%d%H%M%S%f')}.jpg'),  restore_image(cropped, aspect_ratio))      
                     os.remove(file_path)
                 time.sleep(5) 
 
