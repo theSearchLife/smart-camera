@@ -6,7 +6,6 @@ import sys, getopt
 import datetime
 import time
 import numpy as np
-from random import randint
 from edge_impulse_linux.image import ImageImpulseRunner
 
 runner = None
@@ -23,10 +22,12 @@ def pad_image(img):
 
 def restore_image(cropped, aspect_ratio):
     # cropped is a square image, restore it to the original aspect ratio by removing padding
-    if cropped.shape[0] > cropped.shape[1]:
-        cropped = cropped[int(cropped.shape[0] * (1 - aspect_ratio) / 2):int(cropped.shape[0] * (1 + aspect_ratio) / 2), :]
+    if aspect_ratio > 1:
+        new_width = int(cropped.shape[0] / aspect_ratio)
+        cropped = cropped[(cropped.shape[0] - new_width) // 2:(cropped.shape[0] - new_width) // 2 + new_width, :]
     else:
-        cropped = cropped[:, int(cropped.shape[1] * (1 - aspect_ratio) / 2):int(cropped.shape[1] * (1 + aspect_ratio) / 2)]
+        new_height = int(cropped.shape[1] * aspect_ratio)
+        cropped = cropped[:, (cropped.shape[1] - new_height) // 2:(cropped.shape[1] - new_height) // 2 + new_height]
     return cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR)
 
 def main(argv):
@@ -76,14 +77,14 @@ def main(argv):
 
                     elif "bounding_boxes" in res["result"].keys():
                         if config_loader.get_value("DEBUG") == 1:
-                            print("Detection on center crop for " + file_path)
+                            print("BBoxes for " + file_path)
                             print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
                         for bb in res["result"]["bounding_boxes"]:
                             if config_loader.get_value("DEBUG") == 1:
                                 print('\t%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
                             if bb['value'] > float(config_loader.get_value("DETECTION_THRESHOLD")):
                                 if config_loader.get_value("DEBUG") == 1:
-                                    print(f"Detection on center crop for {file_path}")
+                                    print(f"Detection for {file_path}")
                                 current_detection_time = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
                                 cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
                                 (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
