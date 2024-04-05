@@ -115,11 +115,10 @@ def main(argv):
                             if RoisClass.overlap(frame1,x,y,w,h):
                                 now = datetime.datetime.now()
                                 cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  cv2.cvtColor(frame1, 0))
-
+                                print("Motion detected saved in " + os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'))
                                 # if config_loader.get_value("DEBUG") ==1:
                                 #     cv2.rectangle(frame1,(x,y),(x+w,y+h), (0,255,245), 2)
     
-                        #draw
                         frame3=frame1.copy()
 
                         if config_loader.get_value("DEBUG") == 1:

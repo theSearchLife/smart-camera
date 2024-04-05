@@ -90,10 +90,10 @@ def main(argv):
                                 (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
                                 cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
                                 cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-                            if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
-                                last_detection_time = current_detection_time
-                                now = datetime.datetime.now()
-                                cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  restore_image(cropped, aspect_ratio))      
+                        if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
+                            last_detection_time = current_detection_time
+                            now = datetime.datetime.now()
+                            cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  restore_image(cropped, aspect_ratio))      
                     os.remove(file_path)
                 time.sleep(5) 
 
