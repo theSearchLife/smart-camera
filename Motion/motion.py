@@ -13,10 +13,10 @@ class Rois():
     def choose_ROIs(self,frame):
         self.frame=frame
         self.save=frame
-        self.listRois=[(config_loader.get_value("MOTION_ROI")[0],
-                        config_loader.get_value("MOTION_ROI")[1],
-                         config_loader.get_value("MOTION_ROI")[2],
-                          config_loader.get_value("MOTION_ROI")[3])]
+        self.listRois=[(int(config_loader.get_value("MOTION_ROI_XMIN")),
+                        int(config_loader.get_value("MOTION_ROI_YMIN")),
+                        int(config_loader.get_value("MOTION_ROI_XMAX")),
+                        int(config_loader.get_value("MOTION_ROI_YMAX")))]
      
         
     def check_if_overlapping(self, x, y, w, h):
@@ -35,8 +35,8 @@ class Rois():
             y2=roi[1]
             y1=roi[3]
 
-            if config_loader.get_value("DEBUG") == 1:
-                cv2.rectangle(frame1, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            # if config_loader.get_value("DEBUG") == 1:
+            #     cv2.rectangle(frame1, (x1, y1), (x2, y2), (0, 255, 0), 2)
             if (x1 < newx2 and x2 > newx1 and
                     y1 > newy2 and y2 < newy1):
                 return True
@@ -52,12 +52,14 @@ def get_image(dir_name,file_name):
             return image
         except Exception as ex:
             print(ex)
+            print("Error reading image. Retrying...")
         attempts += 1
         time.sleep(0.2)
     return None
 
 
 def main(argv):
+    time.sleep(20)
     config_loader.load_config(argv[0])
 
     while True:
@@ -68,15 +70,12 @@ def main(argv):
         try:
             dir_name = config_loader.get_value("DATAFOLDER")+'/captured/'
             # Get list of all files only in the given directory
-            list_of_files = filter( lambda x: os.path.isfile(os.path.join(dir_name, x)),
-                                    os.listdir(dir_name) )
+            list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)), os.listdir(dir_name) )
             # Sort list of files based on last modification time in ascending order
-            list_of_files = sorted( list_of_files,
-                                    key = lambda x: os.path.getmtime(os.path.join(dir_name, x)))
-            # Iterate over sorted list of files and print file path
-            # along with last modification time of file
+            list_of_files = sorted(list_of_files, key = lambda x: os.path.getmtime(os.path.join(dir_name, x)))
+            # Iterate over sorted list of files and print file path along with last modification time of file
     
-            file_path = os.path.join(dir_name, list_of_files[0])
+            file_path = list_of_files[0]
             frame1 = get_image(dir_name,file_path)
             RoisClass=Rois()
             RoisClass.choose_ROIs(frame1)
@@ -86,13 +85,10 @@ def main(argv):
     
             while True:
                 time.sleep(1)
-                list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)),
-                                       os.listdir(dir_name))
+                list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)), os.listdir(dir_name))
                 # Sort list of files based on last modification time in ascending order
-                list_of_files = sorted(list_of_files,
-                                       key=lambda x: os.path.getmtime(os.path.join(dir_name, x)))
-                # Iterate over sorted list of files and print file path
-                # along with last modification time of file
+                list_of_files = sorted(list_of_files, key=lambda x: os.path.getmtime(os.path.join(dir_name, x)))
+                # Iterate over sorted list of files and print file path along with last modification time of file
     
                 for file_name in list_of_files:
                 
@@ -118,13 +114,12 @@ def main(argv):
                                 continue
                             if RoisClass.overlap(frame1,x,y,w,h):
                                 now = datetime.datetime.now()
-                                cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/motion/'+str(now.hour)+str(now.minute)+str(now.second)+str(randint(0, 100))+'.jpg',  cv2.cvtColor(frame1, 0))
-
-                                if config_loader.get_value("DEBUG") ==1:
-                                    cv2.rectangle(frame1,(x,y),(x+w,y+h), (0,255,245), 2)
+                                cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  cv2.cvtColor(frame1, 0))
+                                print("Motion detected saved in " + os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'))
+                                # if config_loader.get_value("DEBUG") ==1:
+                                #     cv2.rectangle(frame1,(x,y),(x+w,y+h), (0,255,245), 2)
     
-                        #draw
-                        frame3=frame1
+                        frame3=frame1.copy()
 
                         if config_loader.get_value("DEBUG") == 1:
                             cv2.drawContours(frame3,contours,-1,(0,255,0), 2)
@@ -135,11 +130,12 @@ def main(argv):
                         frame2 = get_image(dir_name,file_name)
     
                         #remove old photo
-                        if file_name_to_del!='':
+                        if file_name_to_del != '' and os.path.exists(file_name_to_del):
                             try:
                                 os.remove(file_name_to_del)
                             except Exception as ex:
                                 print(ex)
+                                print("Error deleting file")
                         file_name_to_del=os.path.join(dir_name, file_name)
         except Exception as ex:
             pass           

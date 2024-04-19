@@ -1,29 +1,63 @@
 {
 	"CAPTURE": {
 		"PICAMERA": {
-			"FPS": 1
+			"FPS": 0
 		},
 		"STREAM": {
 			"URL": "",
 			"FPS": 1
+		},
+		"NAME": "",
+		"SCHEDULE": {
+			"MONDAY": {
+				"START": "",
+				"END": ""
+			},
+			"TUESDAY": {
+				"START": "",
+				"END": ""
+			},
+			"WEDNESDAY": {
+				"START": "",
+				"END": ""
+			},
+			"THURSDAY": {
+				"START": "",
+				"END": ""
+			},
+			"FRIDAY": {
+				"START": "",
+				"END": ""
+			},
+			"SATURDAY": {
+				"START": "",
+				"END": ""
+			},
+			"SUNDAY": {
+				"START": "",
+				"END": ""
+			}
 		}
 	},
 	"MOTION": {
-		"ROI": [
-			10,
-			10,
-			100,
-			100
-		]
+		"ROI": {
+			"XMIN": 0,
+			"YMIN": 0,
+			"XMAX": 0,
+			"YMAX": 0
+		}
 	},
 	"DETECTION": {
-		"NETWORK": "/home/",
+		"APIKEY": "",
+		"NETWORK": "Data/model/model.eim",
+		"THRESHOLD": 0.75,
+		"INTERVAL": 60,
 		"UPLOADEDGE": 1
 	},
 	"ALERT": {
-		"CHANNELID": "111",
-		"TOKEN": "xxx"
+		"CHANNELID": "",
+		"TOKEN": ""
 	},
 	"DEBUG": 1,
-	"DATAFOLDER": "/home"
+	"DATAFOLDER": "./Data"
 }
