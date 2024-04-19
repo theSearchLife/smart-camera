@@ -4,11 +4,11 @@ Introduction
 ============
 
 This project aims to reduce Human-wildlife conflict with the help of video surveillance and artificial intelligence.
-The idea is to use a camera for 24h video surveillance and machine learning to detect and alert for animals that pose a threat livelihood or safety of the people in the area.
+The idea is to use a camera for 24h video surveillance and machine learning to detect and alert for animals that pose a threat livelihood or safety of the people in the area. Due to GDPR reasons, a pause of video recording during a time interval specific to each day of the week is implemented.
 
 Structure
 =========
-
+Download Model - deownloads the animal detection model every 24 hours
 Capture app stream - captures and saves photos from a cctv camera
 Capture app - captures and saves photos from the camera connected to RaspberryPi
 Motion app - performs motion detection over a given perimeter
