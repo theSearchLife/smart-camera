@@ -84,7 +84,7 @@ def main(argv):
             file_name_to_del=''
     
             while True:
-                time.sleep(1)
+                time.sleep(0.05)
                 list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)), os.listdir(dir_name))
                 # Sort list of files based on last modification time in ascending order
                 list_of_files = sorted(list_of_files, key=lambda x: os.path.getmtime(os.path.join(dir_name, x)))
