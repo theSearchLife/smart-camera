@@ -59,7 +59,6 @@ def get_image(dir_name,file_name):
 
 
 def main(argv):
-    time.sleep(20)
     config_loader.load_config(argv[0])
 
     while True:
@@ -74,7 +73,6 @@ def main(argv):
             # Sort list of files based on last modification time in ascending order
             list_of_files = sorted(list_of_files, key = lambda x: os.path.getmtime(os.path.join(dir_name, x)))
             # Iterate over sorted list of files and print file path along with last modification time of file
-    
             file_path = list_of_files[0]
             frame1 = get_image(dir_name,file_path)
             RoisClass=Rois()
@@ -84,7 +82,7 @@ def main(argv):
             file_name_to_del=''
     
             while True:
-                time.sleep(0.05)
+                time.sleep(0.1)
                 list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)), os.listdir(dir_name))
                 # Sort list of files based on last modification time in ascending order
                 list_of_files = sorted(list_of_files, key=lambda x: os.path.getmtime(os.path.join(dir_name, x)))
@@ -113,22 +111,21 @@ def main(argv):
                             if cv2.contourArea(contour) < 700:
                                 continue
                             if RoisClass.overlap(frame1,x,y,w,h):
+                                print(f"Motion detected from {file_name_to_del} to {file_name}")
                                 now = datetime.datetime.now()
                                 cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  cv2.cvtColor(frame1, 0))
                                 print("Motion detected saved in " + os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'))
                                 # if config_loader.get_value("DEBUG") ==1:
                                 #     cv2.rectangle(frame1,(x,y),(x+w,y+h), (0,255,245), 2)
     
-                        frame3=frame1.copy()
-
+                        frame_debug=frame1.copy()
                         if config_loader.get_value("DEBUG") == 1:
-                            cv2.drawContours(frame3,contours,-1,(0,255,0), 2)
-                            cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/debug/motion.jpg', frame3)
+                            cv2.drawContours(frame_debug,contours,-1,(0,255,0), 2)
+                            cv2.imwrite(config_loader.get_value("DATAFOLDER")+'/debug/motion.jpg', frame_debug)
     
                         frame1 = frame2
     
-                        frame2 = get_image(dir_name,file_name)
-    
+                        frame2 = get_image(dir_name, file_name)
                         #remove old photo
                         if file_name_to_del != '' and os.path.exists(file_name_to_del):
                             try:
