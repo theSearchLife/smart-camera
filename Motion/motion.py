@@ -111,7 +111,7 @@ def main(argv):
                             if cv2.contourArea(contour) < 700:
                                 continue
                             if RoisClass.overlap(frame1,x,y,w,h):
-                                print(f"Motion detected from {file_name_to_del} to {file_name}")
+                                print(f"Motion detected in {file_name_to_del}")
                                 now = datetime.datetime.now()
                                 cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  cv2.cvtColor(frame1, 0))
                                 print("Motion detected saved in " + os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'))
