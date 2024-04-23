@@ -11,7 +11,7 @@ async def send_photo_async(bot, channel_id, photo_path):
     except Exception as ex:
         print(f"An error occurred: {ex}")
         # Sleep to avoid flooding the API with requests when an error occurs
-        await asyncio.sleep(ex.retry_after if hasattr(ex, "retry_after") else 25)
+        await asyncio.sleep(ex.retry_after if hasattr(ex, "retry_after") else 10)
         # Retry sending the photo
         await bot.send_photo(chat_id=channel_id, photo=FSInputFile(photo_path), caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")}')
 
@@ -22,7 +22,7 @@ async def process_files(bot, channel_id, dir_name):
         file_path = os.path.join(dir_name, file)
         await send_photo_async(bot, channel_id, file_path)
         os.remove(file_path)  # Be cautious with file deletion
-        await asyncio.sleep(1.5)  # Implementing delay between each message to prevent rate limiting
+        # await asyncio.sleep(1.5)  # Implementing delay between each message to prevent rate limiting
 
 async def main(argv):
     config_loader.load_config(argv[0])
@@ -32,7 +32,7 @@ async def main(argv):
     dir_name = config_loader.get_value("DATAFOLDER") + "/detectedTelegram/"
     while True:
         await process_files(bot, channel_id, dir_name)
-        await asyncio.sleep(10)  # Delay before starting the loop again
+        await asyncio.sleep(0.5)  # Delay before starting the loop again
 
 if __name__ == "__main__":
     asyncio.run(main(sys.argv[1:]))
