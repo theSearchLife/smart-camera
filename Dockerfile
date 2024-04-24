@@ -2,7 +2,7 @@ FROM node:latest
 
 # Install necessary system dependencies
 RUN apt update && \
-    apt install -y python3 python3-pip python3-venv libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev ntp chrony && \
+    apt install -y python3 python3-pip python3-venv libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev chrony && \
     apt clean
 
 # Install the edge-impulse-cli and edge-impulse-linux packages using npm
