@@ -39,6 +39,9 @@ RUN chmod +x start.sh
 # Expose NTP port
 EXPOSE 123/udp
 
+COPY set_timezone.sh /usr/local/bin/set_timezone.sh
+RUN chmod +x /usr/local/bin/set_timezone.sh
+
 # Ensure commands and scripts are run within the virtual environment
 # by activating it
-CMD ["/bin/bash", "-c", "source /smart-camera/smart-camera-venv/bin/activate && ./start.sh"]
+CMD ["/bin/bash", "-c", "source /smart-camera/smart-camera-venv/bin/activate && /usr/local/bin/set_timezone.sh && ./start.sh"]
