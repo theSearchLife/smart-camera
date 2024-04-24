@@ -16,7 +16,7 @@ WORKDIR /smart-camera
 RUN python3 -m venv /smart-camera/smart-camera-venv
 ENV PATH="/smart-camera/smart-camera-venv/bin:$PATH"
 
-RUN export TZ=$(curl -s https://ipinfo.io/timezone)
+# RUN export TZ=$(curl -s https://ipinfo.io/timezone)
 
 # Install Python dependencies
 COPY requirements.txt .
