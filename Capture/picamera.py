@@ -148,7 +148,7 @@ def main(argv):
                 loop = asyncio.get_event_loop()
                 loop.run_until_complete(send_telegram_message(channel_id, TOKEN, f'Picamera is not available or failed: {ex}, retrying in 5 minutes'))
                 time.sleep(300)
-        time.sleep(5)
+        time.sleep(1)
 
 
 if __name__ == "__main__":
