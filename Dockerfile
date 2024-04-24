@@ -2,7 +2,7 @@ FROM node:latest
 
 # Install necessary system dependencies
 RUN apt update && \
-    apt install -y python3 python3-pip python3-venv libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev chrony && \
+    apt install -y python3 python3-pip python3-venv libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
     apt clean
 
 # Install the edge-impulse-cli and edge-impulse-linux packages using npm
@@ -34,12 +34,9 @@ COPY . .
 # Make start.sh executable
 RUN chmod +x start.sh
 
-# Configure the NTP server
-COPY chrony.conf /etc/chrony.conf
-
-# Expose the NTP server port
+# Expose NTP port
 EXPOSE 123/udp
 
 # Ensure commands and scripts are run within the virtual environment
 # by activating it
-CMD ["/bin/bash", "-c", "chronyd && source /smart-camera/smart-camera-venv/bin/activate && ./start.sh"]
+CMD ["/bin/bash", "-c", "source /smart-camera/smart-camera-venv/bin/activate && ./start.sh"]
