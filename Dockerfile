@@ -30,6 +30,8 @@ RUN mkdir -p /smart-camera/Data/captured \
     /smart-camera/Data/model \
     /smart-camera/Data/motion
 
+RUN rm -rf Data/captured/* Data/debug/* Data/detected/* Data/detectedTelegram/* Data/motion/*
+
 # Copy the rest of your project
 COPY . .
 
