@@ -102,7 +102,7 @@ def main(argv):
                         print("Frame is empty, stream is not available!")
                         raise Exception("Frame is empty, stream is not available!")
                     else:
-                        now = datetime.datetime.now()
+                        now = datetime.datetime.now()               
                         cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'captured', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'), frame)
                     keep_fps(start_time,time.time(),fps_needed)
                     if not is_capture_time:
@@ -148,7 +148,7 @@ def main(argv):
                 loop = asyncio.get_event_loop()
                 loop.run_until_complete(send_telegram_message(channel_id, TOKEN, f'Picamera is not available or failed: {ex}, retrying in 5 minutes'))
                 time.sleep(300)
-        time.sleep(5)
+        time.sleep(1)
 
 
 if __name__ == "__main__":

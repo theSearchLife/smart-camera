@@ -16,6 +16,8 @@ WORKDIR /smart-camera
 RUN python3 -m venv /smart-camera/smart-camera-venv
 ENV PATH="/smart-camera/smart-camera-venv/bin:$PATH"
 
+# RUN export TZ=$(curl -s https://ipinfo.io/timezone)
+
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
@@ -28,12 +30,20 @@ RUN mkdir -p /smart-camera/Data/captured \
     /smart-camera/Data/model \
     /smart-camera/Data/motion
 
+RUN rm -rf Data/captured/* Data/debug/* Data/detected/* Data/detectedTelegram/* Data/motion/*
+
 # Copy the rest of your project
 COPY . .
 
 # Make start.sh executable
 RUN chmod +x start.sh
 
+# Expose NTP port
+EXPOSE 123/udp
+
+COPY set_timezone.sh /usr/local/bin/set_timezone.sh
+RUN chmod +x /usr/local/bin/set_timezone.sh
+
 # Ensure commands and scripts are run within the virtual environment
 # by activating it
-CMD ["/bin/bash", "-c", "source /smart-camera/smart-camera-venv/bin/activate && ./start.sh"]
+CMD ["/bin/bash", "-c", "source /smart-camera/smart-camera-venv/bin/activate && /usr/local/bin/set_timezone.sh && ./start.sh"]

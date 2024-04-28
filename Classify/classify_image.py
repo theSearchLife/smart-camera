@@ -63,9 +63,6 @@ def main(argv):
                     # get_features_from_image also takes a crop direction arguments in case you don't have square images
                     features, cropped = runner.get_features_from_image(square_img)
                     res = runner.classify(features)
-                    now = datetime.datetime.now()
-                    if config_loader.get_value("DETECTION_UPLOADEDGE") == 1:
-                        cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'detected', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  restore_image(cropped, aspect_ratio))
                     if "classification" in res["result"].keys():
                         if config_loader.get_value("DEBUG") == 1:
                             print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
@@ -86,13 +83,15 @@ def main(argv):
                                 if config_loader.get_value("DEBUG") == 1:
                                     print(f"Detection for {file_path}")
                                 current_detection_time = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-                                cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
-                                (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-                                cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
-                                cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
                         if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
-                            last_detection_time = current_detection_time
                             now = datetime.datetime.now()
+                            if config_loader.get_value("DETECTION_UPLOADEDGE") == 1:
+                                cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'detected', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  restore_image(cropped, aspect_ratio))
+                            last_detection_time = current_detection_time
+                            cropped = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
+                            (text_width, text_height), _ = cv2.getTextSize(f"{bb['label']}: {bb['value']:.2f}", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                            cropped = cv2.rectangle(cropped, (bb['x'], bb['y']-text_height - 5), (bb['x']+text_width, bb['y']), (255, 0, 0), -1)
+                            cropped = cv2.putText(cropped, f"{bb['label']}: {bb['value']:.2f}", (bb['x'], bb['y'] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
                             cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  restore_image(cropped, aspect_ratio))      
                     os.remove(file_path)
                 time.sleep(5) 

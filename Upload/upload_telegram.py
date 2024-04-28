@@ -7,7 +7,7 @@ import config_loader
 
 async def send_photo_async(bot, channel_id, photo_path):
     try:
-        await bot.send_photo(chat_id=channel_id, photo=FSInputFile(photo_path), caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")}')
+        await bot.send_photo(chat_id=channel_id, photo=FSInputFile(photo_path), caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}')
     except Exception as ex:
         print(f"An error occurred: {ex}")
         # Sleep to avoid flooding the API with requests when an error occurs
