@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - container-deployment
 
   pull_request:
     types: [opened, synchronize, closed]
