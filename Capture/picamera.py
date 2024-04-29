@@ -100,7 +100,7 @@ def main(argv):
                     ret, frame = vcap.read()
                     if ret == False:
                         print("Frame is empty, stream is not available!")
-                        raise Exception("Frame is empty, stream is not available!")
+                        raise ValueError("Frame is empty, stream is not available!")
                     else:
                         now = datetime.datetime.now()               
                         cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'captured', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'), frame)
@@ -109,6 +109,9 @@ def main(argv):
                         vcap.release()
                         break
                 vcap.release()
+            except ValueError as ex:
+                if config_loader.get_value("DEBUG") == 1:
+                    print(f'Camera stream from camera {config_loader.get_value("CAPTURE_NAME")} available on url {config_loader.get_value("CAPTURE_STREAM_URL")} could not be read: {ex}.')
             except Exception as ex:
                 print(f'Camera stream from camera {config_loader.get_value("CAPTURE_NAME")} available on url {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes')
                 loop = asyncio.get_event_loop()

@@ -1,8 +1,9 @@
 import os
 import sys
 import time
-import config_loader
+import shutil
 import subprocess
+import config_loader
 
 def download_model():
     config_loader.load_config(sys.argv[1])
@@ -18,8 +19,33 @@ def download_model():
     else:
         print(f"Model {model_name} downloaded or updated at {time.ctime()}.")
 
+def clear_directory_contents(path):
+    """Remove all contents of a directory but keep the directory itself."""
+    if os.path.exists(path):
+        for filename in os.listdir(path):
+            file_path = os.path.join(path, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+                print(f"Removed: {file_path}")
+            except Exception as e:
+                print(f'Failed to delete {file_path}. Reason: {e}')
+    else:
+        print(f"Directory not found: {path}")
+
 def main():
+    directories_to_clear = [
+        "Data/captured",
+        "Data/debug",
+        "Data/detected",
+        "Data/detectedTelegram",
+        "Data/motion"
+    ]
     while True:
+        for directory in directories_to_clear:
+            clear_directory_contents(directory)
         print("Downloading the model...")
         download_model()
         print("Download completed. Waiting 24 hours for the next download.")
