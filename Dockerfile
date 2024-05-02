@@ -35,6 +35,8 @@ RUN rm -rf Data/captured/* Data/debug/* Data/detected/* Data/detectedTelegram/* 
 # Copy the rest of your project
 COPY . .
 
+RUN rm -rf training-assets/
+
 # Make start.sh executable
 RUN chmod +x start.sh
 
