@@ -103,7 +103,7 @@ def main(argv):
                         raise ValueError("Frame is empty, stream is not available!")
                     else:
                         now = datetime.datetime.now()
-                        # cv2.putText(frame, now.strftime("%H:%M:%S"), (500, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 2)
+                        cv2.putText(frame, now.strftime("%H:%M:%S"), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 2)
                         cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'captured', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'), frame)
                         del frame
                     # keep_fps(start_time,time.time(),fps_needed)
