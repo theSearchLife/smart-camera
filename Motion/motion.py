@@ -112,6 +112,7 @@ def main(argv):
                                 continue
                             if RoisClass.overlap(frame1,x,y,w,h):
                                 now = datetime.datetime.now()
+                                cv2.putText(frame1, now.strftime("%H:%M:%S"), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 2)
                                 cv2.imwrite(os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'),  cv2.cvtColor(frame1, 0))
                                 if config_loader.get_value("DEBUG") == 1:
                                     print(f"Motion detected in {file_name_to_del}, saved in " + os.path.join(config_loader.get_value("DATAFOLDER"), 'motion', f'{now.strftime("%Y%m%d%H%M%S%f")}.jpg'))
