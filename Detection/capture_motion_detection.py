@@ -199,7 +199,7 @@ def main(argv):
                                     if cv2.contourArea(contour) < 700:
                                         continue
                                     if RoisClass.overlap(prev_frame, x, y, w, h):
-                                        print(f"Motion at {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}")
+                                        print(f'Motion at {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                                         square_img, aspect_ratio = pad_image(frame)
                                         features, cropped = runner.get_features_from_image(square_img)
                                         res = runner.classify(features)
