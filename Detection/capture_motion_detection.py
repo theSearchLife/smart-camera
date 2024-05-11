@@ -143,6 +143,7 @@ def save_gif(frame_list):
 
 def main(argv):
     global picam2
+    time.sleep(15)
     while True:
         try:
             opts, args = getopt.getopt(argv, "h", ["--help"])
