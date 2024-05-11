@@ -26,7 +26,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 RUN mkdir -p /smart-camera/Data/debug \
     /smart-camera/Data/detected \
     /smart-camera/Data/detectedTelegram \
-    /smart-camera/Data/model \
+    /smart-camera/Data/model
 
 RUN rm -rf Data/captured/* Data/debug/* Data/detected/* Data/detectedTelegram/* Data/motion/*
 
