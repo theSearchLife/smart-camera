@@ -139,7 +139,7 @@ def handler(signum, frame):
 
 def save_gif(frame_list):
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
-    imageio.mimsave(gif_path, frame_list, duration=750)
+    imageio.mimsave(gif_path, frame_list, duration=250)
 
 def main(argv):
     global picam2
@@ -199,6 +199,7 @@ def main(argv):
                                     if cv2.contourArea(contour) < 700:
                                         continue
                                     if RoisClass.overlap(prev_frame, x, y, w, h):
+                                        print(f"Motion at {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")}")
                                         square_img, aspect_ratio = pad_image(frame)
                                         features, cropped = runner.get_features_from_image(square_img)
                                         res = runner.classify(features)
