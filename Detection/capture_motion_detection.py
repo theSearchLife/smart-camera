@@ -171,7 +171,7 @@ def main(argv):
                     continue
                 if config_loader.get_value("CAPTURE_PICAMERA_FPS") == 0:
                     try:
-                        frame_list = deque(maxlen=config_loader.get_value("ALERT_NUMFRAMES"))
+                        frame_list = deque(maxlen=int(config_loader.get_value("ALERT_NUMFRAMES")))
                         # fps_needed = float(config_loader.get_value("CAPTURE_STREAM_FPS"))  # COMMENT THIS
                         vcap = cv2.VideoCapture(config_loader.get_value("CAPTURE_STREAM_URL"), cv2.CAP_FFMPEG)
                         ret, prev_frame = vcap.read()
