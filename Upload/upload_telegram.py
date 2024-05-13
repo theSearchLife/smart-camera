@@ -1,26 +1,33 @@
 import os
 import sys
 import asyncio
-from telegram import Bot
+from telegram import Bot, error
 import config_loader
 
 async def send_photo_async(bot, channel_id, photo_path):
     try:
+        asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
         with open(photo_path, 'rb') as photo:
-            if photo_path.lower().endswith('.gif'):
-                await bot.send_animation(chat_id=channel_id, animation=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}')
-            elif photo_path.lower().endswith('.jpg'):
-                await bot.send_photo(chat_id=channel_id, photo=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}')
-    except Exception as ex:
-        print(f"An error occurred: {ex}")
-        # Sleep to avoid flooding the API with requests when an error occurs
-        await asyncio.sleep(ex.retry_after if hasattr(ex, "retry_after") else 10)
-        # Retry sending the photo
-        with open(photo_path, 'rb') as photo:
-            if photo_path.lower().endswith('.gif'):
-                await bot.send_animation(chat_id=channel_id, animation=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}')
-            elif photo_path.lower().endswith('.jpg'):
-                await bot.send_photo(chat_id=channel_id, photo=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}')
+            media_type = photo_path.lower().split('.')[-1]
+            if media_type == 'gif':
+                await bot.send_animation(chat_id=channel_id, animation=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}', timeout=5)
+            elif media_type == 'mp4':
+                await bot.send_video(chat_id=channel_id, video=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}', timeout=5)
+            elif media_type == 'jpg':
+                await bot.send_photo(chat_id=channel_id, photo=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}', timeout=5)
+    except error.BadRequest as e:
+        if "File must be non-empty" in str(e):
+            print(f"Caught empty file error for {photo_path}. Retrying...")
+            await asyncio.sleep(10)  # Delay to allow time for the file to be ready
+            await send_photo_async(bot, channel_id, photo_path)  # Retry sending the photo
+        else:
+            raise
+    except error.TimedOut as te:
+        print(f"Timeout error: {te}. Retrying...")
+        await asyncio.sleep(te.retry_after if hasattr(te, "retry_after") else 10)  # Wait before retrying
+        await send_photo_async(bot, channel_id, photo_path)  # Retry sending the photo       
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 async def process_files(bot, channel_id, dir_name):
     list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)), os.listdir(dir_name))

@@ -138,8 +138,18 @@ def handler(signum, frame):
     exit(1)
 
 def save_gif(frame_list):
+    last_frame = frame_list[-1]
+    for i in range(10):
+        frame_list.append(last_frame)
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
-    imageio.mimsave(gif_path, frame_list, duration=250)
+    imageio.mimsave(gif_path, frame_list, duration=500)
+
+def save_mp4(frame_list):
+    mp4_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.mp4')
+    out = cv2.VideoWriter(mp4_path, cv2.VideoWriter_fourcc(*'mp4v'), 1, (frame_list[0].shape[1], frame_list[0].shape[0]))
+    for frame in frame_list:
+        out.write(frame)
+    out.release()
 
 def main(argv):
     global picam2
