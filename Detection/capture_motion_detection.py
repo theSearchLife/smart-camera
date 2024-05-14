@@ -138,6 +138,7 @@ def handler(signum, frame):
     exit(1)
 
 def save_gif(frame_list):
+    frame_list = list(frame_list)
     last_frame = frame_list[-1]
     for i in range(5):
         frame_list.append(last_frame)
