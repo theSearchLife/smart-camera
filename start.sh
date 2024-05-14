@@ -7,5 +7,5 @@ echo "Timezone set to $TZ"
 python3 Detection/download_model.py Config.json &
 python3 Detection/capture_motion_detection.py Config.json &
 python3 Upload/upload_edge.py Config.json &
-# python3 Upload/upload_telegram.py Config.json &
+python3 Upload/upload_telegram.py Config.json &
 wait

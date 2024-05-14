@@ -6,7 +6,7 @@ import config_loader
 
 async def send_photo_async(bot, channel_id, photo_path):
     try:
-        asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
+        await asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
         with open(photo_path, 'rb') as photo:
             media_type = photo_path.lower().split('.')[-1]
             if media_type == 'gif':
@@ -18,7 +18,7 @@ async def send_photo_async(bot, channel_id, photo_path):
     except error.BadRequest as e:
         if "File must be non-empty" in str(e):
             print(f"Caught empty file error for {photo_path}. Retrying...")
-            await asyncio.sleep(10)  # Delay to allow time for the file to be ready
+            await asyncio.sleep(3)  # Delay to allow time for the file to be ready
             await send_photo_async(bot, channel_id, photo_path)  # Retry sending the photo
         else:
             raise

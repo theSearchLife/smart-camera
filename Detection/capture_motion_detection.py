@@ -80,7 +80,7 @@ async def send_telegram_message(bot, channel_id, message):
 
 async def send_photo_async(bot, channel_id, photo_path):
     try:
-        asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
+        await asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
         with open(photo_path, 'rb') as photo:
             media_type = photo_path.lower().split('.')[-1]
             if media_type == 'gif':
@@ -162,10 +162,13 @@ def handler(signum, frame):
     exit(1)
 
 def save_gif(frame_list):
+    gamma = 1.01
+    lut = np.array([((i / 255.0) ** gamma) * 255 for i in range(256)]).astype("uint8")
     frame_list = list(frame_list)
-    last_frame = frame_list[-1]
-    for i in range(10):
-        frame_list.append(last_frame)
+    last_frame = frame_list[-1].copy()
+    extension = [last_frame, cv2.LUT(last_frame, lut)]
+    for _ in range(5):
+        frame_list.extend(extension)
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
     imageio.mimsave(gif_path, frame_list, duration=500)
     return gif_path
@@ -270,9 +273,9 @@ def main(argv):
                                         if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
                                             last_detection_time = current_detection_time
                                             gif_path = save_gif(frame_list)
-                                            loop = asyncio.get_event_loop()
-                                            loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
-                                            os.remove(gif_path)
+                                            # loop = asyncio.get_event_loop()
+                                            # loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
+                                            # os.remove(gif_path)
                                         is_motion = True
                                         break
                                 if is_motion == False:
