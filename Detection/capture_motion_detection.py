@@ -139,7 +139,7 @@ def handler(signum, frame):
 
 def save_gif(frame_list):
     last_frame = frame_list[-1]
-    for i in range(10):
+    for i in range(5):
         frame_list.append(last_frame)
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
     imageio.mimsave(gif_path, frame_list, duration=500)
