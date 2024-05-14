@@ -75,13 +75,11 @@ class Rois():
                 return True
         return False
 
-async def send_telegram_message(channel_id, token, message):
-    bot = Bot(token=token)
+async def send_telegram_message(bot, channel_id, message):
     await bot.send_message(chat_id=channel_id, text=message)
 
-async def send_photo_async(channel_id, token, photo_path):
+async def send_photo_async(bot, channel_id, photo_path):
     try:
-        bot = Bot(token=token)
         asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
         with open(photo_path, 'rb') as photo:
             media_type = photo_path.lower().split('.')[-1]
@@ -166,9 +164,8 @@ def handler(signum, frame):
 def save_gif(frame_list):
     frame_list = list(frame_list)
     last_frame = frame_list[-1]
-    for i in range(5):
+    for i in range(10):
         frame_list.append(last_frame)
-    print(len(frame_list))
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
     imageio.mimsave(gif_path, frame_list, duration=500)
     return gif_path
@@ -202,7 +199,7 @@ def main(argv):
                 model_info = runner.init()
                 print('Loaded runner for "' + model_info['project']['owner'] + ' / ' + model_info['project']['name'] + '"')
                 labels = model_info['model_parameters']['labels']
-                TOKEN = config_loader.get_value("ALERT_TOKEN")
+                bot = Bot(token=config_loader.get_value("ALERT_TOKEN"))
                 channel_id = config_loader.get_value("ALERT_CHANNELID")
                 status_thread = threading.Thread(target=update_capture_status, args=())
                 status_thread.start()
@@ -274,7 +271,8 @@ def main(argv):
                                             last_detection_time = current_detection_time
                                             gif_path = save_gif(frame_list)
                                             loop = asyncio.get_event_loop()
-                                            loop.run_until_complete(send_photo_async(channel_id, TOKEN, gif_path))
+                                            loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
+                                            os.remove(gif_path)
                                         is_motion = True
                                         break
                                 if is_motion == False:
@@ -294,7 +292,7 @@ def main(argv):
                     except Exception as ex:
                         print(f'Camera stream from camera {config_loader.get_value("CAPTURE_NAME")} available on url {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes')
                         loop = asyncio.get_event_loop()
-                        loop.run_until_complete(send_telegram_message(channel_id, TOKEN, f'Camera stream {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes'))
+                        loop.run_until_complete(send_telegram_message(bot, channel_id, f'Camera stream {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes'))
                         time.sleep(300)
                 else:
                     try:
@@ -328,7 +326,7 @@ def main(argv):
                     except Exception as ex:
                         print(f'Picamera is not available or failed: {ex}, retrying in 5 minutes')
                         loop = asyncio.get_event_loop()
-                        loop.run_until_complete(send_telegram_message(channel_id, TOKEN, f'Picamera is not available or failed: {ex}, retrying in 5 minutes'))
+                        loop.run_until_complete(send_telegram_message(bot, channel_id, f'Picamera is not available or failed: {ex}, retrying in 5 minutes'))
                         time.sleep(300)
                 time.sleep(1)
             
