@@ -9,7 +9,7 @@ import signal
 import config_loader
 import cv2
 import threading
-from telegram import Bot
+from telegram import Bot, error
 import asyncio
 import numpy as np
 from edge_impulse_linux.image import ImageImpulseRunner
@@ -79,6 +79,32 @@ async def send_telegram_message(channel_id, token, message):
     bot = Bot(token=token)
     await bot.send_message(chat_id=channel_id, text=message)
 
+async def send_photo_async(channel_id, token, photo_path):
+    try:
+        bot = Bot(token=token)
+        asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
+        with open(photo_path, 'rb') as photo:
+            media_type = photo_path.lower().split('.')[-1]
+            if media_type == 'gif':
+                await bot.send_animation(chat_id=channel_id, animation=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
+            elif media_type == 'mp4':
+                await bot.send_video(chat_id=channel_id, video=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
+            elif media_type == 'jpg':
+                await bot.send_photo(chat_id=channel_id, photo=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
+    except error.BadRequest as e:
+        if "File must be non-empty" in str(e):
+            print(f"Caught empty file error for {photo_path}. Retrying...")
+            await asyncio.sleep(3)  # Delay to allow time for the file to be ready
+            await send_photo_async(bot, channel_id, photo_path)  # Retry sending the photo
+        else:
+            raise
+    except error.TimedOut as te:
+        print(f"Timeout error: {te}. Retrying...")
+        await asyncio.sleep(te.retry_after if hasattr(te, "retry_after") else 10)  # Wait before retrying
+        await send_photo_async(bot, channel_id, photo_path)  # Retry sending the photo       
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 def is_time_to_capture():
     """
     Determine if the current time is within the scheduled capture range for the current day of the week.        
@@ -142,8 +168,10 @@ def save_gif(frame_list):
     last_frame = frame_list[-1]
     for i in range(5):
         frame_list.append(last_frame)
+    print(len(frame_list))
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
     imageio.mimsave(gif_path, frame_list, duration=500)
+    return gif_path
 
 def save_mp4(frame_list):
     mp4_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.mp4')
@@ -151,6 +179,7 @@ def save_mp4(frame_list):
     for frame in frame_list:
         out.write(frame)
     out.release()
+    return mp4_path
 
 def main(argv):
     global picam2
@@ -243,7 +272,9 @@ def main(argv):
                                         frame_list.append(cv2.cvtColor(restore_image(cropped, aspect_ratio), cv2.COLOR_BGR2RGB))
                                         if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
                                             last_detection_time = current_detection_time
-                                            save_gif(frame_list)
+                                            gif_path = save_gif(frame_list)
+                                            loop = asyncio.get_event_loop()
+                                            loop.run_until_complete(send_photo_async(channel_id, TOKEN, gif_path))
                                         is_motion = True
                                         break
                                 if is_motion == False:
