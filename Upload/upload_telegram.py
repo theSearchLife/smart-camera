@@ -20,7 +20,7 @@ async def send_photo_async(bot, channel_id, photo_path):
     except error.BadRequest as e:
         if "File must be non-empty" in str(e):
             print(f"Caught empty file error for {photo_path}. Retrying...")
-            await asyncio.sleep(3)  # Delay to allow time for the file to be ready
+            await asyncio.sleep(1)  # Delay to allow time for the file to be ready
             await send_photo_async(bot, channel_id, photo_path)  # Retry sending the photo
         else:
             raise
