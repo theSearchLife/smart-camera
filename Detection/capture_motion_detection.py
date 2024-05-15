@@ -14,6 +14,7 @@ import asyncio
 import numpy as np
 from edge_impulse_linux.image import ImageImpulseRunner
 from collections import deque
+from PIL import Image
 
 #used for closing
 picam2=None
@@ -170,7 +171,9 @@ def save_gif(frame_list):
     for _ in range(5):
         frame_list.extend(extension)
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
-    imageio.mimsave(gif_path, frame_list, duration=500)
+    pil_images = [Image.fromarray(frame) for frame in frame_list]
+    pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0)
+    # imageio.mimsave(gif_path, frame_list, duration=500)
     return gif_path
 
 def save_mp4(frame_list):
