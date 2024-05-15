@@ -1,21 +1,22 @@
 import os
 import sys
 import asyncio
-import datetime
 from telegram import Bot, error
+from datetime import datetime
 import config_loader
 
 async def send_photo_async(bot, channel_id, photo_path):
     try:
         await asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
+        photo_time = datetime.fromtimestamp(os.path.getmtime(photo_path)).strftime("%Y-%m-%d %H:%M:%S.%f")
         with open(photo_path, 'rb') as photo:
             media_type = photo_path.lower().split('.')[-1]
             if media_type == 'gif':
-                await bot.send_animation(chat_id=channel_id, animation=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
+                await bot.send_animation(chat_id=channel_id, animation=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_time}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
             elif media_type == 'mp4':
-                await bot.send_video(chat_id=channel_id, video=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
+                await bot.send_video(chat_id=channel_id, video=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_time}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
             elif media_type == 'jpg':
-                await bot.send_photo(chat_id=channel_id, photo=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} on {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
+                await bot.send_photo(chat_id=channel_id, photo=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_time}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
     except error.BadRequest as e:
         if "File must be non-empty" in str(e):
             print(f"Caught empty file error for {photo_path}. Retrying...")
