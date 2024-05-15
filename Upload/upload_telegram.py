@@ -48,7 +48,7 @@ async def main(argv):
     dir_name = config_loader.get_value("DATAFOLDER") + "/detectedTelegram/"
     while True:
         await process_files(bot, channel_id, dir_name)
-        await asyncio.sleep(0.5)  # Delay before starting the loop again
+        await asyncio.sleep(1)  # Delay before starting the loop again
 
 if __name__ == "__main__":
     asyncio.run(main(sys.argv[1:]))
