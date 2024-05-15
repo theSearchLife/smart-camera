@@ -172,7 +172,7 @@ def save_gif(frame_list):
         frame_list.extend(extension)
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
     pil_images = [Image.fromarray(frame) for frame in frame_list]
-    pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0)
+    pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0, optimize=True)
     # imageio.mimsave(gif_path, frame_list, duration=500)
     return gif_path
 
