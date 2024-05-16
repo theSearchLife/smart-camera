@@ -82,7 +82,7 @@ async def send_telegram_message(bot, channel_id, message):
 async def send_photo_async(bot, channel_id, photo_path):
     try:
         await asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
-        photo_time = datetime.fromtimestamp(os.path.getmtime(photo_path)).strftime("%Y-%m-%d %H:%M:%S.%f")
+        photo_time = datetime.datetime.fromtimestamp(os.path.getmtime(photo_path)).strftime("%Y-%m-%d %H:%M:%S.%f")
         with open(photo_path, 'rb') as photo:
             media_type = photo_path.lower().split('.')[-1]
             if media_type == 'gif':
