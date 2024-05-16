@@ -177,7 +177,7 @@ def save_gif(frame_list, bot, channel_id):
     # imageio.mimsave(gif_path, frame_list, duration=500)
     try:
         loop = asyncio.new_event_loop()
-        asyncio.get_event_loop()
+        asyncio.set_event_loop(loop)
         loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
     except Exception as e:
         print(f"Failed to send GIF: {e}")
