@@ -2,7 +2,7 @@
 from random import randint
 import os
 import time
-import imageio
+# import imageio
 import datetime
 import sys, getopt
 import signal
@@ -82,18 +82,19 @@ async def send_telegram_message(bot, channel_id, message):
 async def send_photo_async(bot, channel_id, photo_path):
     try:
         await asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
+        photo_time = datetime.fromtimestamp(os.path.getmtime(photo_path)).strftime("%Y-%m-%d %H:%M:%S.%f")
         with open(photo_path, 'rb') as photo:
             media_type = photo_path.lower().split('.')[-1]
             if media_type == 'gif':
-                await bot.send_animation(chat_id=channel_id, animation=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
+                await bot.send_animation(chat_id=channel_id, animation=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} at {photo_time}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
             elif media_type == 'mp4':
-                await bot.send_video(chat_id=channel_id, video=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
+                await bot.send_video(chat_id=channel_id, video=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} at {photo_time}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
             elif media_type == 'jpg':
-                await bot.send_photo(chat_id=channel_id, photo=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} in {photo_path}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
+                await bot.send_photo(chat_id=channel_id, photo=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} at {photo_time}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
     except error.BadRequest as e:
         if "File must be non-empty" in str(e):
             print(f"Caught empty file error for {photo_path}. Retrying...")
-            await asyncio.sleep(3)  # Delay to allow time for the file to be ready
+            await asyncio.sleep(1)  # Delay to allow time for the file to be ready
             await send_photo_async(bot, channel_id, photo_path)  # Retry sending the photo
         else:
             raise
@@ -162,7 +163,7 @@ def handler(signum, frame):
     picam2.close()
     exit(1)
 
-def save_gif(frame_list):
+def save_gif(frame_list, bot, channel_id):
     gamma = 1.01
     lut = np.array([((i / 255.0) ** gamma) * 255 for i in range(256)]).astype("uint8")
     frame_list = list(frame_list)
@@ -174,15 +175,36 @@ def save_gif(frame_list):
     pil_images = [Image.fromarray(frame) for frame in frame_list]
     pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0, optimize=True)
     # imageio.mimsave(gif_path, frame_list, duration=500)
-    return gif_path
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.get_event_loop()
+        loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
+    except Exception as e:
+        print(f"Failed to send GIF: {e}")
+    finally:
+        os.remove(gif_path)
 
-def save_mp4(frame_list):
+def save_mp4(frame_list, bot, channel_id):
+    gamma = 1.01
+    lut = np.array([((i / 255.0) ** gamma) * 255 for i in range(256)]).astype("uint8")
+    frame_list = list(frame_list)
+    last_frame = frame_list[-1].copy()
+    extension = [last_frame, cv2.LUT(last_frame, lut)]
+    for _ in range(5):
+        frame_list.extend(extension)
     mp4_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.mp4')
     out = cv2.VideoWriter(mp4_path, cv2.VideoWriter_fourcc(*'mp4v'), 1, (frame_list[0].shape[1], frame_list[0].shape[0]))
     for frame in frame_list:
         out.write(frame)
     out.release()
-    return mp4_path
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.get_event_loop()
+        loop.run_until_complete(send_photo_async(bot, channel_id, mp4_path))
+    except Exception as e:
+        print(f"Failed to send GIF: {e}")
+    finally:
+        os.remove(mp4_path)
 
 def main(argv):
     global picam2
@@ -275,10 +297,8 @@ def main(argv):
                                         frame_list.append(cv2.cvtColor(restore_image(cropped, aspect_ratio), cv2.COLOR_BGR2RGB))
                                         if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
                                             last_detection_time = current_detection_time
-                                            gif_path = save_gif(frame_list)
-                                            # loop = asyncio.get_event_loop()
-                                            # loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
-                                            # os.remove(gif_path)
+                                            gif_thread = threading.Thread(target=save_gif, args=(frame_list, bot, channel_id))
+                                            gif_thread.start()
                                         is_motion = True
                                         break
                                 if is_motion == False:
