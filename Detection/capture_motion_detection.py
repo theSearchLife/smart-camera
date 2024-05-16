@@ -174,9 +174,9 @@ def save_gif(frame_list, bot, channel_id):
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
     if config_loader.get_value("DEBUG") == 1:
         print(f"Saving GIF of detection with path {gif_path}")
-    # pil_images = [Image.fromarray(frame) for frame in frame_list]
-    # pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0, optimize=True)
-    imageio.mimsave(gif_path, frame_list, duration=500)
+    pil_images = [Image.fromarray(frame) for frame in frame_list]
+    pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0, optimize=True)
+    # imageio.mimsave(gif_path, frame_list, duration=500)
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
