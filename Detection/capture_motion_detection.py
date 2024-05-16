@@ -81,7 +81,7 @@ async def send_telegram_message(bot, channel_id, message):
 
 async def send_photo_async(bot, channel_id, photo_path):
     try:
-        await asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
+        # await asyncio.sleep(1)  # Implementing delay between each message to prevent rate limiting
         photo_time = datetime.datetime.fromtimestamp(os.path.getmtime(photo_path)).strftime("%Y-%m-%d %H:%M:%S.%f")
         with open(photo_path, 'rb') as photo:
             media_type = photo_path.lower().split('.')[-1]
@@ -169,9 +169,11 @@ def save_gif(frame_list, bot, channel_id):
     frame_list = list(frame_list)
     last_frame = frame_list[-1].copy()
     extension = [last_frame, cv2.LUT(last_frame, lut)]
-    for _ in range(5):
+    for _ in range(3):
         frame_list.extend(extension)
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
+    if config_loader.get_value("DEBUG") == 1:
+        print(f"Saving GIF of detection with path {gif_path}")
     pil_images = [Image.fromarray(frame) for frame in frame_list]
     pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0, optimize=True)
     # imageio.mimsave(gif_path, frame_list, duration=500)
@@ -297,8 +299,8 @@ def main(argv):
                                         frame_list.append(cv2.cvtColor(restore_image(cropped, aspect_ratio), cv2.COLOR_BGR2RGB))
                                         if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
                                             last_detection_time = current_detection_time
-                                            gif_thread = threading.Thread(target=save_gif, args=(frame_list, bot, channel_id))
-                                            gif_thread.start()
+                                            save_detection_thread = threading.Thread(target=save_gif, args=(frame_list, bot, channel_id))
+                                            save_detection_thread.start()
                                         is_motion = True
                                         break
                                 if is_motion == False:
