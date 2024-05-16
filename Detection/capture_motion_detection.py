@@ -2,7 +2,7 @@
 from random import randint
 import os
 import time
-# import imageio
+import imageio
 import datetime
 import sys, getopt
 import signal
@@ -174,9 +174,9 @@ def save_gif(frame_list, bot, channel_id):
     gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
     if config_loader.get_value("DEBUG") == 1:
         print(f"Saving GIF of detection with path {gif_path}")
-    pil_images = [Image.fromarray(frame) for frame in frame_list]
-    pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0, optimize=True)
-    # imageio.mimsave(gif_path, frame_list, duration=500)
+    # pil_images = [Image.fromarray(frame) for frame in frame_list]
+    # pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0, optimize=True)
+    imageio.mimsave(gif_path, frame_list, duration=500)
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -187,24 +187,24 @@ def save_gif(frame_list, bot, channel_id):
         os.remove(gif_path)
 
 def save_mp4(frame_list, bot, channel_id):
-    gamma = 1.01
-    lut = np.array([((i / 255.0) ** gamma) * 255 for i in range(256)]).astype("uint8")
-    frame_list = list(frame_list)
-    last_frame = frame_list[-1].copy()
-    extension = [last_frame, cv2.LUT(last_frame, lut)]
-    for _ in range(5):
-        frame_list.extend(extension)
+    # gamma = 1.01
+    # lut = np.array([((i / 255.0) ** gamma) * 255 for i in range(256)]).astype("uint8")
+    # frame_list = list(frame_list)
+    # last_frame = frame_list[-1].copy()
+    # extension = [last_frame, cv2.LUT(last_frame, lut)]
+    # for _ in range(5):
+    #     frame_list.extend(extension)
     mp4_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.mp4')
-    out = cv2.VideoWriter(mp4_path, cv2.VideoWriter_fourcc(*'mp4v'), 1, (frame_list[0].shape[1], frame_list[0].shape[0]))
+    out = cv2.VideoWriter(mp4_path, cv2.VideoWriter_fourcc(*'mp4v'), 2, (frame_list[0].shape[1], frame_list[0].shape[0]))
     for frame in frame_list:
-        out.write(frame)
+        out.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
     out.release()
     try:
         loop = asyncio.new_event_loop()
-        asyncio.get_event_loop()
+        asyncio.set_event_loop(loop)
         loop.run_until_complete(send_photo_async(bot, channel_id, mp4_path))
     except Exception as e:
-        print(f"Failed to send GIF: {e}")
+        print(f"Failed to send MP4: {e}")
     finally:
         os.remove(mp4_path)
 
@@ -239,7 +239,7 @@ def main(argv):
                 if config_loader.get_value("CAPTURE_PICAMERA_FPS") == 0:
                     try:
                         frame_list = deque(maxlen=int(config_loader.get_value("ALERT_NUMFRAMES")))
-                        # fps_needed = float(config_loader.get_value("CAPTURE_STREAM_FPS"))  # COMMENT THIS
+                        fps_needed = float(config_loader.get_value("CAPTURE_STREAM_FPS"))  # COMMENT THIS
                         vcap = cv2.VideoCapture(config_loader.get_value("CAPTURE_STREAM_URL"), cv2.CAP_FFMPEG)
                         ret, prev_frame = vcap.read()
                         if ret == False:
@@ -248,7 +248,7 @@ def main(argv):
                         RoisClass = Rois()
                         RoisClass.choose_ROIs(prev_frame)
                         while True:
-                            # start_time=time.time()  # COMMENT THIS
+                            start_time=time.time()  # COMMENT THIS
                             ret, frame = vcap.read()
                             if ret == False:
                                 print("Frame is empty, stream is not available!")
@@ -309,7 +309,7 @@ def main(argv):
                                     frame_list.append(cv2.cvtColor(restore_image(square_img, aspect_ratio), cv2.COLOR_BGR2RGB))
                                 prev_frame = frame.copy()
                                 del frame
-                            # keep_fps(start_time,time.time(),fps_needed)  # COMMENT THIS
+                            keep_fps(start_time,time.time(),fps_needed)  # COMMENT THIS
                             if not is_capture_time:
                                 vcap.release()
                                 break
