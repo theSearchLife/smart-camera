@@ -186,6 +186,43 @@ def save_gif(frame_list, bot, channel_id):
     finally:
         os.remove(gif_path)
 
+def save_collage_jpg(frame_list, bot, channel_id):
+    def build_collage(frames):
+        num_frames = len(frames)
+        if num_frames < 1:
+            return None
+        if num_frames == 1:
+            collage = frames[0]
+        elif num_frames == 2:
+            collage = np.concatenate(frames, axis=0)
+        elif num_frames == 3:
+            collage = np.concatenate(frames, axis=1)
+        elif num_frames == 4:
+            upper = np.concatenate(frames[:2], axis=1)
+            lower = np.concatenate(frames[2:], axis=1)
+            collage = np.concatenate([upper, lower], axis=0)
+        else:
+            num_rows = (num_frames + 2) // 3
+            empty_image = np.zeros_like(frames[0])
+            padded_frames = frames + [empty_image] * (num_rows * 3 - num_frames)
+            collage_rows = [np.concatenate(padded_frames[i*3:(i+1)*3], axis=1) for i in range(num_rows)]
+            collage = np.concatenate(collage_rows, axis=0)
+        return collage
+    collage_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.jpg')
+    if config_loader.get_value("DEBUG") == 1:
+        print(f"Saving collage of detection with path {collage_path}")
+    frame_list = list(frame_list)
+    collage = build_collage(frame_list)
+    cv2.imwrite(collage_path, cv2.cvtColor(collage, cv2.COLOR_RGB2BGR))
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(send_photo_async(bot, channel_id, collage_path))
+    except Exception as e:
+        print(f"Failed to send collage: {e}")
+    finally:
+        os.remove(collage_path)
+
 def main(argv):
     global picam2
     time.sleep(15)
@@ -277,7 +314,7 @@ def main(argv):
                                         frame_list.append(cv2.cvtColor(restore_image(cropped, aspect_ratio), cv2.COLOR_BGR2RGB))
                                         if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
                                             last_detection_time = current_detection_time
-                                            save_detection_thread = threading.Thread(target=save_gif, args=(frame_list, bot, channel_id))
+                                            save_detection_thread = threading.Thread(target=save_collage_jpg, args=(frame_list, bot, channel_id))  # select the type of saving, GIF or collage
                                             save_detection_thread.start()
                                         is_motion = True
                                         break
