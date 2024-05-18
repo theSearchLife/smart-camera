@@ -12,7 +12,7 @@ This app is a GitHub Registry Container (GHRC), container that is created with t
 
 The app consists of 3 main modules:
  - **The model downloading module**: present in Python script *Detection/download_model.py*, this module downloads the model trained on the Edge Impulse platform every 24 hours.
- - **The detection module**: present in Python script *Detection/capture_motion_detection.py*, this module captures frames from the video stream specified inside the *Config.json* file, performs motion detection over a given perimeter and, using a convolutional neural network called YOLOv5 trained on Edge Impulse platform, detects the presence of the desired entity we wish to identify; if such entity is present in the current frame, we are saving a GIF that consists of the moment of the detection together with an pre-established number of frames from before that moment, as well as a picture of the frame the detection was encountered, picture that is going to be uploaded on the Edge Impulse platform in order to improve the object detection model; after the GIF is saved, it is uploaded on Telegram as an alert.
+ - **The detection module**: present in Python script *Detection/capture_motion_detection.py*, this module captures frames from the video stream specified inside the *Config.json* file, performs motion detection over a given perimeter and, using a convolutional neural network called YOLOv5 trained on Edge Impulse platform, detects the presence of the desired entity we wish to identify; if such entity is present in the current frame, we are saving a GIF or a photo collage that consists of the moment of the detection together with an pre-established number of frames from before that moment, as well as a picture of the frame the detection was encountered, picture that is going to be uploaded on the Edge Impulse platform in order to improve the object detection model; after the GIF or the photo collage is saved, it is uploaded on Telegram as an alert.
  - **The Edge Impulse module**: present in Python script *Upload/upload_edge.py*, this module uploads all the pictures on Edge Impulse platform that are going to be used for further training the model.
 
 How to install the app
@@ -21,8 +21,9 @@ Here are the steps required to install the Smart Cam App on an IoT device (e.g. 
 1. Install balenaOS on the embedded device and balena CLI on a computer used for deployment and development, create a balena device fleet, as well as add the IoT device in that fleet by following the steps from the [official guide](https://docs.balena.io/learn/getting-started/raspberrypi5/python/).
 2. Establish values and create the environment variables of the fleet on the balena Cloud platform; these fleet environment variables are:
     - **ALERT_CHANNELID** - the ID of the Telegram channel that is going to be used to upload the alerts of the Smart Cam App;
-    - **ALERT_NUMFRAMES** - the number of frames that are going to be put inside the GIF corresponding to a detection;
     - **ALERT_TOKEN** - the token of the Telegram Bot used for uploading the alerts on the Telegram alert channel;
+    - **ALERT_NUMFRAMES** - the number of frames that are going to be put inside the GIF or photo collage corresponding to a detection;
+    - **ALERT_SAVEGIF** - boolean value (0 or 1) that determines whether we save the detection as a GIF for 1 or as a photo collage for 0;
     - **CAPTURE_NAME** - the name of the video live stream that is used in the app;
     - **CAPTURE_STREAM_URL** - the URL of the video live stream that is used in the app;
     - **DETECTION_APIKEY** - the Edge Impulse API key used for interacting with the correspondent Edge Impulse project, such as uploading the pictures used for improving the model or downloading the model;

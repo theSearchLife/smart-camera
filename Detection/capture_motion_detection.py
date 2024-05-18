@@ -87,8 +87,6 @@ async def send_photo_async(bot, channel_id, photo_path):
             media_type = photo_path.lower().split('.')[-1]
             if media_type == 'gif':
                 await bot.send_animation(chat_id=channel_id, animation=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} at {photo_time}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
-            elif media_type == 'mp4':
-                await bot.send_video(chat_id=channel_id, video=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} at {photo_time}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
             elif media_type == 'jpg':
                 await bot.send_photo(chat_id=channel_id, photo=photo, caption=f'Detection from camera with name {config_loader.get_value("CAPTURE_NAME")} at {photo_time}', read_timeout=5, write_timeout=20, connect_timeout=5, pool_timeout=5)
     except error.BadRequest as e:
@@ -202,6 +200,9 @@ def save_collage_jpg(frame_list, bot, channel_id):
             lower = np.concatenate(frames[2:], axis=1)
             collage = np.concatenate([upper, lower], axis=0)
         else:
+            if num_frames > 12:
+                frames = frames[-12:]
+                num_frames = 12
             num_rows = (num_frames + 2) // 3
             empty_image = np.zeros_like(frames[0])
             padded_frames = frames + [empty_image] * (num_rows * 3 - num_frames)
@@ -314,8 +315,12 @@ def main(argv):
                                         frame_list.append(cv2.cvtColor(restore_image(cropped, aspect_ratio), cv2.COLOR_BGR2RGB))
                                         if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
                                             last_detection_time = current_detection_time
-                                            save_detection_thread = threading.Thread(target=save_collage_jpg, args=(frame_list, bot, channel_id))  # select the type of saving, GIF or collage
-                                            save_detection_thread.start()
+                                            if int(config_loader.get_value("ALERT_SAVEGIF")) == 1:
+                                                save_detection_thread = threading.Thread(target=save_gif, args=(frame_list, bot, channel_id))  # select the type of saving, GIF or collage
+                                                save_detection_thread.start()
+                                            else:
+                                                save_detection_thread = threading.Thread(target=save_collage_jpg, args=(frame_list, bot, channel_id))  # select the type of saving, GIF or collage
+                                                save_detection_thread.start()                                            
                                         is_motion = True
                                         break
                                 if is_motion == False:
