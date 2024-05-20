@@ -37,11 +37,9 @@ def clear_directory_contents(path):
 
 def main():
     directories_to_clear = [
-        "Data/captured",
         "Data/debug",
         "Data/detected",
-        "Data/detectedTelegram",
-        "Data/motion"
+        "Data/detectedTelegram"
     ]
     while True:
         for directory in directories_to_clear:

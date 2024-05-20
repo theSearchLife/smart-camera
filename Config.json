@@ -56,7 +56,9 @@
 	},
 	"ALERT": {
 		"CHANNELID": "",
-		"TOKEN": ""
+		"TOKEN": "",
+		"NUMFRAMES": 20,
+		"SAVEGIF": 1
 	},
 	"DEBUG": 1,
 	"DATAFOLDER": "./Data"

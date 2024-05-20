@@ -2,7 +2,7 @@ FROM node:latest
 
 # Install necessary system dependencies
 RUN apt update && \
-    apt install -y python3 python3-pip python3-venv libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
+    apt install -y nano python3 python3-pip python3-venv libsndfile1 ffmpeg libsm6 libxext6 libgl1 build-essential curl software-properties-common libcap-dev portaudio19-dev && \
     apt clean
 
 # Install the edge-impulse-cli and edge-impulse-linux packages using npm
@@ -23,14 +23,12 @@ COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Create required directories
-RUN mkdir -p /smart-camera/Data/captured \
-    /smart-camera/Data/debug \
+RUN mkdir -p /smart-camera/Data/debug \
     /smart-camera/Data/detected \
     /smart-camera/Data/detectedTelegram \
-    /smart-camera/Data/model \
-    /smart-camera/Data/motion
+    /smart-camera/Data/model
 
-RUN rm -rf Data/captured/* Data/debug/* Data/detected/* Data/detectedTelegram/* Data/motion/*
+RUN rm -rf Data/debug/* Data/detected/* Data/detectedTelegram/* Data/motion/*
 
 # Copy the rest of your project
 COPY . .
@@ -46,6 +44,5 @@ EXPOSE 123/udp
 COPY set_timezone.sh /usr/local/bin/set_timezone.sh
 RUN chmod +x /usr/local/bin/set_timezone.sh
 
-# Ensure commands and scripts are run within the virtual environment
-# by activating it
+# Ensure commands and scripts are run within the virtual environment by activating it
 CMD ["/bin/bash", "-c", "source /smart-camera/smart-camera-venv/bin/activate && /usr/local/bin/set_timezone.sh && ./start.sh"]
