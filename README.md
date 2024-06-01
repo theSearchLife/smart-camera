@@ -62,6 +62,16 @@ In order to see the logs of the Smart-Camera service on a device of a fleet, we 
 ```bash
 journalctl -a --no-pager -u balena.service --file /var/log/journal/<machine-id>/system.journal  # Replace <machine-id> with the unique system identifier to view balena.service logs from the specified journal file, e.g.:cdc38b4575d543bab0fc166e5f1fba07; the machine-id can be found in /etc/machine-id
 ```
+
+
+How to download files from within the Smart Camera service on a local machine
+=======================
+In order to download a file from within the container on a local machine, we are going to use an online tool called [Tool.sh](https://temp.sh/). We are going to use the following command from within the terminal of the container that can be accessed from the summary of the device from Balena Dashboard:
+```bash
+curl -F "file=@Data/model/model.eim" https://temp.sh/upload && echo
+```
+This command will output a link to Tool.sh that can be accesed in order to download the desired file locally.
+
 Useful Edge Impulse CLI commands
 ================
 In order to use the Edge Impulse CLI on a Linux machine, make sure that you install NPM, and, after that, install Edge Impulse CLI with the following commands:

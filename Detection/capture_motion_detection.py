@@ -181,8 +181,8 @@ def save_gif(frame_list, bot, channel_id):
         loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
     except Exception as e:
         print(f"Failed to send GIF: {e}")
-    finally:
-        os.remove(gif_path)
+    # finally:
+    #     os.remove(gif_path)
 
 def save_collage_jpg(frame_list, bot, channel_id):
     def build_collage(frames):
@@ -221,8 +221,8 @@ def save_collage_jpg(frame_list, bot, channel_id):
         loop.run_until_complete(send_photo_async(bot, channel_id, collage_path))
     except Exception as e:
         print(f"Failed to send collage: {e}")
-    finally:
-        os.remove(collage_path)
+    # finally:
+    #     os.remove(collage_path)
 
 def main(argv):
     global picam2
