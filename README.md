@@ -68,7 +68,7 @@ How to download files from within the Smart Camera service on a local machine
 =======================
 In order to download a file from within the container on a local machine, we are going to use an online tool called [Tool.sh](https://temp.sh/). We are going to use the following command from within the terminal of the container that can be accessed from the summary of the device from Balena Dashboard:
 ```bash
-curl -F "file=@Data/model/model.eim" https://temp.sh/upload && echo
+curl -F "file=@path/to/your/file" https://temp.sh/upload && echo
 ```
 This command will output a link to Tool.sh that can be accesed in order to download the desired file locally.
 
