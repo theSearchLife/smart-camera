@@ -42,8 +42,8 @@ def main():
         "Data/detectedTelegram"
     ]
     while True:
-        # for directory in directories_to_clear:
-        #     clear_directory_contents(directory)
+        for directory in directories_to_clear:
+            clear_directory_contents(directory)
         print("Downloading the model...")
         download_model()
         print("Download completed. Waiting 24 hours for the next download.")
