@@ -263,6 +263,7 @@ def main(argv):
                             raise ValueError("Frame is empty, stream is not available!")
                         RoisClass = Rois()
                         RoisClass.choose_ROIs(prev_frame)
+                        active_threads = []
                         while True:
                             # start_time=time.time()  # COMMENT THIS
                             ret, frame = vcap.read()
@@ -318,9 +319,11 @@ def main(argv):
                                             if int(config_loader.get_value("ALERT_SAVEGIF")) == 1:
                                                 save_detection_thread = threading.Thread(target=save_gif, args=(frame_list, bot, channel_id))  # select the type of saving, GIF or collage
                                                 save_detection_thread.start()
+                                                active_threads.append(save_detection_thread)
                                             else:
                                                 save_detection_thread = threading.Thread(target=save_collage_jpg, args=(frame_list, bot, channel_id))  # select the type of saving, GIF or collage
-                                                save_detection_thread.start()                                            
+                                                save_detection_thread.start()
+                                                active_threads.append(save_detection_thread)
                                         is_motion = True
                                         break
                                 if is_motion == False:
@@ -330,6 +333,10 @@ def main(argv):
                                 prev_frame = frame.copy()
                                 del frame
                             # keep_fps(start_time,time.time(),fps_needed)  # COMMENT THIS
+                            for thread in active_threads:
+                                if not thread.is_alive():
+                                    thread.join()
+                                    active_threads.remove(thread)
                             if not is_capture_time:
                                 vcap.release()
                                 break
