@@ -178,10 +178,7 @@ def save_gif(frame_list, bot, channel_id):
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        try:
-            loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
-        finally:
-            loop.close()
+        loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
     except Exception as e:
         print(f"Failed to send GIF: {e}")
     finally:
@@ -221,10 +218,7 @@ def save_collage_jpg(frame_list, bot, channel_id):
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        try:
-            loop.run_until_complete(send_photo_async(bot, channel_id, collage_path))
-        finally:
-            loop.close()
+        loop.run_until_complete(send_photo_async(bot, channel_id, collage_path))
     except Exception as e:
         print(f"Failed to send collage: {e}")
     finally:
@@ -346,11 +340,8 @@ def main(argv):
                     except Exception as ex:
                         print(f'Camera stream from camera {config_loader.get_value("CAPTURE_NAME")} available on url {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes')
                         loop = asyncio.get_event_loop()
-                        try:
-                            loop.run_until_complete(send_telegram_message(bot, channel_id, f'Camera stream {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes'))
-                        finally:
-                            loop.close()
-                            time.sleep(300)
+                        loop.run_until_complete(send_telegram_message(bot, channel_id, f'Camera stream {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes'))
+                        time.sleep(300)
                 else:
                     try:
                         fps_needed = float(config_loader.get_value("CAPTURE_PICAMERA_FPS"))
@@ -383,11 +374,8 @@ def main(argv):
                     except Exception as ex:
                         print(f'Picamera is not available or failed: {ex}, retrying in 5 minutes')
                         loop = asyncio.get_event_loop()
-                        try:
-                            loop.run_until_complete(send_telegram_message(bot, channel_id, f'Picamera is not available or failed: {ex}, retrying in 5 minutes'))
-                        finally:
-                            loop.close()
-                            time.sleep(300)
+                        loop.run_until_complete(send_telegram_message(bot, channel_id, f'Picamera is not available or failed: {ex}, retrying in 5 minutes'))
+                        time.sleep(300)
                 time.sleep(1)
             
             finally:
