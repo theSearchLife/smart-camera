@@ -161,74 +161,68 @@ def handler(signum, frame):
     picam2.close()
     exit(1)
 
-def save_gif(frame_list, bot, channel_id, done_event=None):
+def save_gif(frame_list, bot, channel_id):
+    gamma = 1.01
+    lut = np.array([((i / 255.0) ** gamma) * 255 for i in range(256)]).astype("uint8")
+    frame_list = list(frame_list)
+    last_frame = frame_list[-1].copy()
+    extension = [last_frame, cv2.LUT(last_frame, lut)]
+    for _ in range(3):
+        frame_list.extend(extension)
+    gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
+    if config_loader.get_value("DEBUG") == 1:
+        print(f"Saving GIF of detection with path {gif_path}")
+    pil_images = [Image.fromarray(frame) for frame in frame_list]
+    pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0, optimize=True)
+    # imageio.mimsave(gif_path, frame_list, duration=500)
     try:
-        gamma = 1.01
-        lut = np.array([((i / 255.0) ** gamma) * 255 for i in range(256)]).astype("uint8")
-        frame_list = list(frame_list)
-        last_frame = frame_list[-1].copy()
-        extension = [last_frame, cv2.LUT(last_frame, lut)]
-        for _ in range(3):
-            frame_list.extend(extension)
-        gif_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.gif')
-        if config_loader.get_value("DEBUG") == 1:
-            print(f"Saving GIF of detection with path {gif_path}")
-        pil_images = [Image.fromarray(frame) for frame in frame_list]
-        pil_images[0].save(gif_path, save_all=True, append_images=pil_images[1:], duration=500, loop=0, optimize=True)
-        # imageio.mimsave(gif_path, frame_list, duration=500)
-        try:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
-        except Exception as e:
-            print(f"Failed to send GIF: {e}")
-        finally:
-            os.remove(gif_path)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(send_photo_async(bot, channel_id, gif_path))
+    except Exception as e:
+        print(f"Failed to send GIF: {e}")
     finally:
-        done_event.set()
+        os.remove(gif_path)
 
-def save_collage_jpg(frame_list, bot, channel_id, done_event=None):
+def save_collage_jpg(frame_list, bot, channel_id):
+    def build_collage(frames):
+        num_frames = len(frames)
+        if num_frames < 1:
+            return None
+        if num_frames == 1:
+            collage = frames[0]
+        elif num_frames == 2:
+            collage = np.concatenate(frames, axis=0)
+        elif num_frames == 3:
+            collage = np.concatenate(frames, axis=1)
+        elif num_frames == 4:
+            upper = np.concatenate(frames[:2], axis=1)
+            lower = np.concatenate(frames[2:], axis=1)
+            collage = np.concatenate([upper, lower], axis=0)
+        else:
+            if num_frames > 12:
+                frames = frames[-12:]
+                num_frames = 12
+            num_rows = (num_frames + 2) // 3
+            empty_image = np.zeros_like(frames[0])
+            padded_frames = frames + [empty_image] * (num_rows * 3 - num_frames)
+            collage_rows = [np.concatenate(padded_frames[i*3:(i+1)*3], axis=1) for i in range(num_rows)]
+            collage = np.concatenate(collage_rows, axis=0)
+        return collage
+    collage_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.jpg')
+    if config_loader.get_value("DEBUG") == 1:
+        print(f"Saving collage of detection with path {collage_path}")
+    frame_list = list(frame_list)
+    collage = build_collage(frame_list)
+    cv2.imwrite(collage_path, cv2.cvtColor(collage, cv2.COLOR_RGB2BGR))
     try:
-        def build_collage(frames):
-            num_frames = len(frames)
-            if num_frames < 1:
-                return None
-            if num_frames == 1:
-                collage = frames[0]
-            elif num_frames == 2:
-                collage = np.concatenate(frames, axis=0)
-            elif num_frames == 3:
-                collage = np.concatenate(frames, axis=1)
-            elif num_frames == 4:
-                upper = np.concatenate(frames[:2], axis=1)
-                lower = np.concatenate(frames[2:], axis=1)
-                collage = np.concatenate([upper, lower], axis=0)
-            else:
-                if num_frames > 12:
-                    frames = frames[-12:]
-                    num_frames = 12
-                num_rows = (num_frames + 2) // 3
-                empty_image = np.zeros_like(frames[0])
-                padded_frames = frames + [empty_image] * (num_rows * 3 - num_frames)
-                collage_rows = [np.concatenate(padded_frames[i*3:(i+1)*3], axis=1) for i in range(num_rows)]
-                collage = np.concatenate(collage_rows, axis=0)
-            return collage
-        collage_path = os.path.join(config_loader.get_value("DATAFOLDER"), 'detectedTelegram', f'{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.jpg')
-        if config_loader.get_value("DEBUG") == 1:
-            print(f"Saving collage of detection with path {collage_path}")
-        frame_list = list(frame_list)
-        collage = build_collage(frame_list)
-        cv2.imwrite(collage_path, cv2.cvtColor(collage, cv2.COLOR_RGB2BGR))
-        try:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(send_photo_async(bot, channel_id, collage_path))
-        except Exception as e:
-            print(f"Failed to send collage: {e}")
-        finally:
-            os.remove(collage_path)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(send_photo_async(bot, channel_id, collage_path))
+    except Exception as e:
+        print(f"Failed to send collage: {e}")
     finally:
-        done_event.set()
+        os.remove(collage_path)
 
 def main(argv):
     global picam2
@@ -269,7 +263,6 @@ def main(argv):
                             raise ValueError("Frame is empty, stream is not available!")
                         RoisClass = Rois()
                         RoisClass.choose_ROIs(prev_frame)
-                        active_threads = []
                         while True:
                             # start_time=time.time()  # COMMENT THIS
                             ret, frame = vcap.read()
@@ -322,15 +315,14 @@ def main(argv):
                                         frame_list.append(cv2.cvtColor(restore_image(cropped, aspect_ratio), cv2.COLOR_BGR2RGB))
                                         if (current_detection_time - last_detection_time).total_seconds() > detection_time_interval:
                                             last_detection_time = current_detection_time
-                                            done_event = threading.Event()
                                             if int(config_loader.get_value("ALERT_SAVEGIF")) == 1:
-                                                save_detection_thread = threading.Thread(target=save_gif, args=(frame_list, bot, channel_id, done_event))  # select the type of saving, GIF or collage
-                                                save_detection_thread.start()
-                                                active_threads.append((save_detection_thread, done_event))
+                                                save_gif(frame_list, bot, channel_id)
+                                                # save_detection_thread = threading.Thread(target=save_gif, args=(frame_list, bot, channel_id))  # select the type of saving, GIF or collage
+                                                # save_detection_thread.start()
                                             else:
-                                                save_detection_thread = threading.Thread(target=save_collage_jpg, args=(frame_list, bot, channel_id, done_event))  # select the type of saving, GIF or collage
-                                                save_detection_thread.start()
-                                                active_threads.append((save_detection_thread, done_event))
+                                                save_collage_jpg(frame_list, bot, channel_id)
+                                                # save_detection_thread = threading.Thread(target=save_collage_jpg, args=(frame_list, bot, channel_id))  # select the type of saving, GIF or collage
+                                                # save_detection_thread.start()
                                         is_motion = True
                                         break
                                 if is_motion == False:
@@ -340,10 +332,6 @@ def main(argv):
                                 prev_frame = frame.copy()
                                 del frame
                             # keep_fps(start_time,time.time(),fps_needed)  # COMMENT THIS
-                            for thread, event in active_threads:
-                                if event.is_set():
-                                    thread.join()
-                                    active_threads.remove((thread, event))
                             if not is_capture_time:
                                 vcap.release()
                                 break
