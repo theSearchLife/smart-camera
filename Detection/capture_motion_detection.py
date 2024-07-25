@@ -227,11 +227,15 @@ def save_collage_jpg(frame_list, bot, channel_id):
 def main(argv):
     global picam2
     time.sleep(15)
+
+    is_capture_thread_start = False 
+
     while True:
         try:
             opts, args = getopt.getopt(argv, "h", ["--help"])
         except getopt.GetoptError:
             sys.exit(2)
+
         config_loader.load_config(args[0])
 
         modelfile = config_loader.get_value("DETECTION_NETWORK")
@@ -247,11 +251,16 @@ def main(argv):
                 labels = model_info['model_parameters']['labels']
                 bot = Bot(token=config_loader.get_value("ALERT_TOKEN"))
                 channel_id = config_loader.get_value("ALERT_CHANNELID")
-                status_thread = threading.Thread(target=update_capture_status, args=())
-                status_thread.start()
+
+                if not is_capture_thread_start:
+                    status_thread = threading.Thread(target=update_capture_status, args=())
+                    status_thread.start()
+                    is_capture_thread_start = True
+
                 if not is_capture_time:
                     time.sleep(5)
                     continue
+                
                 if config_loader.get_value("CAPTURE_PICAMERA_FPS") == 0:
                     try:
                         frame_list = deque(maxlen=int(config_loader.get_value("ALERT_NUMFRAMES")))
@@ -344,6 +353,7 @@ def main(argv):
                         loop = asyncio.get_event_loop()
                         loop.run_until_complete(send_telegram_message(bot, channel_id, f'Camera stream {config_loader.get_value("CAPTURE_STREAM_URL")} is not available or failed: {ex}, retrying in 5 minutes'))
                         time.sleep(300)
+                
                 else:
                     try:
                         fps_needed = float(config_loader.get_value("CAPTURE_PICAMERA_FPS"))
